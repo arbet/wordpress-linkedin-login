@@ -73,8 +73,8 @@ Class PkliLogin {
     // Returns the code for the login button
     public function get_login_button() {
 
-        return "<a rel='nofollow' href='" . $this->get_auth_url() . "' title='".__('Connect with LinkedIn','pkli-login')."'>
-                                            <img alt='LinkedIn' title='".__('Sign-in Using LinkedIn','pkli-login')."' src='" . plugins_url() . "/pkli-login/includes/assets/img/linkedin.png' />
+        return "<a rel='nofollow' href='" . $this->get_auth_url() . "' title='".__('Connect with LinkedIn','linkedin-login')."'>
+                                            <img alt='LinkedIn' title='".__('Sign-in Using LinkedIn','linkedin-login')."' src='" . plugins_url() . "/linkedin-login/includes/assets/img/linkedin.png' />
         </a>";
     }
 
@@ -164,10 +164,10 @@ Class PkliLogin {
         // Data has been marked as private inside LinkedIn user's account
         if($email== 'private')
             $error = __('We are unable to sign you in, since you have not allowed API'
-                . ' access to your email address. Please register manually','pkli-login');
+                . ' access to your email address. Please register manually','linkedin-login');
         else
             $error = __('It seems that your application does not have proper scope permissions.
-                Please visit your application page on linkedin, and make sure r_emailaddress is checked under Scope','pkli-login');
+                Please visit your application page on linkedin, and make sure r_emailaddress is checked under Scope','linkedin-login');
         return '<div id="login_error">	<strong>ERROR</strong>: '.$error.'<br />
 </div>';
     }
@@ -177,12 +177,12 @@ Class PkliLogin {
 	if($attributes != false){
 	    // extract data from array
 	    extract( shortcode_atts( array('text' => ''), $attributes ) );
-	    return "<a href='".$url."'>".__($text,'pkli-login')."</a>";
+	    return "<a href='".$url."'>".__($text,'linkedin-login')."</a>";
 	}
 	
 	// No text variable has been setup, pass default
         
-        return "<a href='".$url."'>".__('Login with LinkedIn','pkli-login')."</a>";
+        return "<a href='".$url."'>".__('Login with LinkedIn','linkedin-login')."</a>";
     }
 
 }

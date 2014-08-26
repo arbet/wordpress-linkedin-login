@@ -6,7 +6,7 @@
  * Version: 0.1
  * Author: Samer Bechara
  * Author URI: http://thoughtengineer.com/
- * Text Domain: pkli-login
+ * Text Domain: linkedin-login
  * Domain Path: /languageswo 
 * Plugin Type: Piklist
  * License: GPL2
@@ -62,8 +62,8 @@ function pkli_init()
   function piklist_theme_setting_pages($pages)
   {
      $pages[] = array(
-      'page_title' => __('LinkedIn Login Settings', 'pkli-login')
-      ,'menu_title' => __('LinkedIn Login', 'pkli-login')
+      'page_title' => __('LinkedIn Login Settings', 'linkedin-login')
+      ,'menu_title' => __('LinkedIn Login', 'linkedin-login')
       ,'sub_menu' => 'options-general.php' //Under Appearance menu
       ,'capability' => 'manage_options'
       ,'menu_slug' => 'linkedin_login'
@@ -72,7 +72,7 @@ function pkli_init()
       //,'page_icon' => plugins_url('piklist/parts/img/piklist-page-icon-32.png')
       ,'single_line' => false
       //,'default_tab' => 'Advanced'
-      ,'save_text' => __('Save LinkedIn Settings','pkli-login')
+      ,'save_text' => __('Save LinkedIn Settings','linkedin-login')
     );
  
     return $pages;
@@ -90,7 +90,7 @@ function pkli_init()
   * this function loads our translation files
   */
  function pkli_login_load_translation_files() {
-  load_plugin_textdomain('pkli-login', false, 'pkli-login/languages');
+  load_plugin_textdomain('linkedin-login', false, 'linkedin-login/languages');
  }    
     
 add_action('init','register_session',1);

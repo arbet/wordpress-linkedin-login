@@ -23,7 +23,7 @@ List of features:
 You can find more information here: [LinkedIn Login Plugin](http://thoughtengineer.com/wordpress-linkedin-login-plugin/ \"Your wordpress LinkedIn Login Solution\").
 
 == Installation ==
-1. Upload \"pkli-login\" to the \"/wp-content/plugins/\" directory.
+1. Upload \"linkedin-login\" to the \"/wp-content/plugins/\" directory.
 1. Activate the plugin through the \"Plugins\" menu in WordPress.
 1. Enter your API Keys under Settings->LinkedIn Login
 
