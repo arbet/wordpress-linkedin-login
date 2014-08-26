@@ -20,7 +20,7 @@ List of features:
 * Use the shortcode [wpli_login_link] to display the sign in link anywhere on your site.
 * You can use [wpli_login_link text='Your Custom Link Text'] to generate a sign-in link with your own text.
 
-You can find more information here: [LinkedIn Login Plugin](http://thoughtengineer.com/wordpress-linkedin-login-plugin/ "Your WordPress LinkedIn Login Solution\").
+You can find more information here: [LinkedIn Login Plugin](http://thoughtengineer.com/wordpress-linkedin-login-plugin/ "Your WordPress LinkedIn Login Solution").
 
 == Installation ==
 1. Upload \"linkedin-login\" to the \"/wp-content/plugins/\" directory.
