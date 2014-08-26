@@ -3,7 +3,7 @@ Contributors: arbet
 Tags: linkedin, linkedin-api, social-login
 Requires at least: 3.0.1
 Tested up to: 3.9.2
-Stable tag: trunk
+Stable tag: 0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,7 +20,7 @@ List of features:
 * Use the shortcode [wpli_login_link] to display the sign in link anywhere on your site.
 * You can use [wpli_login_link text='Your Custom Link Text'] to generate a sign-in link with your own text.
 
-You can find more information here: [LinkedIn Login Plugin](http://thoughtengineer.com/wordpress-linkedin-login-plugin/ \"Your wordpress LinkedIn Login Solution\").
+You can find more information here: [LinkedIn Login Plugin](http://thoughtengineer.com/wordpress-linkedin-login-plugin/ "Your WordPress LinkedIn Login Solution\").
 
 == Installation ==
 1. Upload \"linkedin-login\" to the \"/wp-content/plugins/\" directory.
