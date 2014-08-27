@@ -24,6 +24,7 @@ Class PkliLogin {
     public $redirect_uri;
     public $li_api_key;
     public $li_secret_key;
+    public $access_token;
     
     public $oauth;
 
@@ -58,14 +59,14 @@ Class PkliLogin {
     }
 
     // Returns LinkedIn authorization URL
-    public function get_auth_url() {
+    public function get_auth_url($redirect = false) {
 
         $state = wp_generate_password(12, false);
         $authorize_url = $this->oauth->authorizeUrl(array('scope' => 'r_basicprofile r_emailaddress',
             'state' => $state));
 
         // Store state in database in temporarily till checked back
-        $_SESSION['li_api_state'] = $state;
+        $_SESSION['li_api_state'][$state] = $redirect;
 
         return $authorize_url;
     }
@@ -81,6 +82,7 @@ Class PkliLogin {
     // Logs in a user after he has authorized his LinkedIn account
     function process_login() {
 
+	//var_dump($_REQUEST);var_dump($_SESSION);die();
         // Action exists on login form and code is sent back
         if (isset($_REQUEST['action']) && isset($_REQUEST['code'])) {
             
@@ -88,9 +90,12 @@ Class PkliLogin {
             // Check if the action belongs to our plugin
             if ($_REQUEST['action'] == "pkli_login") {
 
-                // Check if state is correct to avoid request forgery
-                if ($_REQUEST['state'] == $_SESSION['li_api_state']) {
+                // Check if state is existent to avoid request forgery
+                if (isset($_SESSION['li_api_state'][$_REQUEST['state']])) {
 
+		    // Get redirect URL
+		    $redirect = $_SESSION['li_api_state'][$_REQUEST['state']];
+		    
                     // State should be deleted as it is no longer needed
                     unset($_SESSION['li_api_state']);
 
@@ -120,14 +125,8 @@ Class PkliLogin {
 			// Redirect to URL if set
 			$li_keys = get_option('pkli_basic_options');
 			
-			if(isset($_SESSION['pkli_redirect'])){
-			    // Use redirect in shortcode
-			    $redirect = $_SESSION['pkli_redirect'];
-			    unset($_SESSION['pkli_redirect']);
-			}    
-			
-			// Use default redirect
-			else
+			// Use default redirect in case no redirect has been specified
+			if($redirect == false  || $redirect == '')
 			    $redirect = $li_keys['li_redirect_url'];
 			
 			// Validate URL as absolute
@@ -183,13 +182,13 @@ Class PkliLogin {
     }
     
     public function get_login_link($attributes = false){
-        $url = $this->get_auth_url();
+        
 	if($attributes != false){
 	    // extract data from array
 	    extract( shortcode_atts( array('text' => '', 'redirect'=> '' , 'class' => ''), $attributes ) );
 
-	    // Store session in redirect
-	    $_SESSION['pkli_redirect'] = $redirect;
+	    $url = $this->get_auth_url($redirect);
+
 	    return "<a href='".$url."' class='$class'>".__($text,'linkedin-login')."</a>";
 	}
 	
