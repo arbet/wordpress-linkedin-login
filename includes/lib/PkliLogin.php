@@ -186,11 +186,11 @@ Class PkliLogin {
         $url = $this->get_auth_url();
 	if($attributes != false){
 	    // extract data from array
-	    extract( shortcode_atts( array('text' => '', 'redirect'=> ''), $attributes ) );
+	    extract( shortcode_atts( array('text' => '', 'redirect'=> '' , 'class' => ''), $attributes ) );
 
 	    // Store session in redirect
 	    $_SESSION['pkli_redirect'] = $redirect;
-	    return "<a href='".$url."'>".__($text,'linkedin-login')."</a>";
+	    return "<a href='".$url."' class='$class'>".__($text,'linkedin-login')."</a>";
 	}
 	
 	// No text variable has been setup, pass default
