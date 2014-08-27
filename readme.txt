@@ -3,7 +3,7 @@ Contributors: arbet01
 Tags: linkedin, linkedin-api, social-login
 Requires at least: 3.0.1
 Tested up to: 3.9.2
-Stable tag: 0.11
+Stable tag: 0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,6 +19,7 @@ List of features:
 * Just enter your LinkedIn API Key and Secret Key, under the settings page and you\'re ready to go!
 * Use the shortcode [wpli_login_link] to display the sign in link anywhere on your site.
 * You can use [wpli_login_link text='Your Custom Link Text'] to generate a sign-in link with your own text.
+* [wpli_login_link redirect = 'http://example.com/your-redirect-page'] will redirect the user to a certain URL after login
 
 You can find more information here: [LinkedIn Login Plugin](http://thoughtengineer.com/wordpress-linkedin-login-plugin/ "Your WordPress LinkedIn Login Solution").
 
@@ -36,6 +37,9 @@ You can find more information here: [LinkedIn Login Plugin](http://thoughtengine
 1. After creating the application, you will be able to see your API key and secret. Copy and paste them into your plugin. 
 
 == Changelog ==
+
+= 0.2 =
+* Added option to allow redirect URL via shortcode
 
 = 0.11 =
 * Fixed minor aesthetic issues.

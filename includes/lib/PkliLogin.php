@@ -119,7 +119,17 @@ Class PkliLogin {
                         
 			// Redirect to URL if set
 			$li_keys = get_option('pkli_basic_options');
-			$redirect = $li_keys['li_redirect_url'];
+			
+			if(isset($_SESSION['pkli_redirect'])){
+			    // Use redirect in shortcode
+			    $redirect = $_SESSION['pkli_redirect'];
+			    unset($_SESSION['pkli_redirect']);
+			}    
+			
+			// Use default redirect
+			else
+			    $redirect = $li_keys['li_redirect_url'];
+			
 			// Validate URL as absolute
 			if(filter_var($redirect, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED))
 			    wp_safe_redirect($redirect);
@@ -176,7 +186,10 @@ Class PkliLogin {
         $url = $this->get_auth_url();
 	if($attributes != false){
 	    // extract data from array
-	    extract( shortcode_atts( array('text' => ''), $attributes ) );
+	    extract( shortcode_atts( array('text' => '', 'redirect'=> ''), $attributes ) );
+
+	    // Store session in redirect
+	    $_SESSION['pkli_redirect'] = $redirect;
 	    return "<a href='".$url."'>".__($text,'linkedin-login')."</a>";
 	}
 	
