@@ -20,7 +20,8 @@ Class PkliLogin {
 
     const _AUTHORIZE_URL = 'https://www.linkedin.com/uas/oauth2/authorization';
     const _TOKEN_URL = 'https://www.linkedin.com/uas/oauth2/accessToken';
-
+    const _BASE_URL = 'https://api.linkedin.com/v1';
+    
     public $redirect_uri;
     public $li_api_key;
     public $li_secret_key;
@@ -52,7 +53,12 @@ Class PkliLogin {
         $this->oauth->redirect_uri = $this->redirect_uri;
         $this->oauth->authorize_url = self::_AUTHORIZE_URL;
         $this->oauth->token_url = self::_TOKEN_URL;
+	$this->oauth->api_base_url = self::_BASE_URL;
         
+	// Set user token if it exists
+	if (get_current_user_id()){
+	    $this->oauth->access_token = get_user_meta(get_current_user_id(), 'pkli_access_token', true);
+	}
         // Add shortcode for getting LinkedIn Login URL
         add_shortcode( 'wpli_login_link', array($this, 'get_login_link') );        
 
@@ -84,11 +90,8 @@ Class PkliLogin {
 
 	//var_dump($_REQUEST);var_dump($_SESSION);die();
         // Action exists on login form and code is sent back
-        if (isset($_REQUEST['action']) && isset($_REQUEST['code'])) {
+        if ( ($_REQUEST['action'] == "pkli_login")  && isset($_REQUEST['code'])) {
             
-            
-            // Check if the action belongs to our plugin
-            if ($_REQUEST['action'] == "pkli_login") {
 
                 // Check if state is existent to avoid request forgery
                 if (isset($_SESSION['li_api_state'][$_REQUEST['state']])) {
@@ -112,29 +115,18 @@ Class PkliLogin {
                     
                     // Get the user's email address
                     $email = (string) $xml->{'email-address'};
-                    
+ 
+		    // Logout any logged in user before we start to avoid any issues arising
+		    wp_logout();
+		    
                     // Sign in the user if the email already exists
                     if(email_exists($email)){
                         
                         // Get the user ID by email
                         $user = get_user_by('email',$email);
                         
-                        // Signon user by ID
-                        wp_set_auth_cookie($user->ID);
-                        
-			// Redirect to URL if set
-			$li_keys = get_option('pkli_basic_options');
+			$user_id = $user->ID;
 			
-			// Use default redirect in case no redirect has been specified
-			if($redirect == false  || $redirect == '')
-			    $redirect = $li_keys['li_redirect_url'];
-			
-			// Validate URL as absolute
-			if(filter_var($redirect, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED))
-			    wp_safe_redirect($redirect);
-                        // Invalid redirect URL, we'll redirect to admin URL
-			else
-			    wp_redirect( admin_url() );
                     }
                     
                     // User is signing in for the first time 
@@ -143,19 +135,40 @@ Class PkliLogin {
                         // Create user
                         $user_id = wp_create_user( $email, wp_generate_password(16), $email );
                         
-                        // Signon user by ID
-                        wp_set_auth_cookie($user_id);
-                        
-                        // Redirect to admin URL
-                        wp_redirect( admin_url() );                        
                     }
                     
                     // Invalid user email
                     else {
                         echo $this->get_login_error($email);
                     }
+		    
+		    $__id = $user_id;
+		    
+		    // Signon user by ID
+		    wp_set_auth_cookie($user_id);
+
+		    // Redirect to URL if set
+		    $li_keys = get_option('pkli_basic_options');
+
+		    // Use default redirect in case no redirect has been specified
+		    if( ($redirect == false)  || ($redirect == '') ){
+			$redirect = $li_keys['li_redirect_url'];
+		    }
+
+		    // Store the user's access token as a meta object
+		    add_user_meta($user_id,'pkli_access_token',$access_token,true);
+
+		    // Update the user's data from LinkedIn
+		    $this->update_user_data($xml, $user_id);
+
+		    // Validate URL as absolute
+		    if(filter_var($redirect, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED))
+			wp_safe_redirect($redirect);
+		    // Invalid redirect URL, we'll redirect to admin URL
+		    else
+			wp_redirect( admin_url() );		    
                 }
-            }
+            
         }
         // Getting an error, redirect to login page
         elseif (isset($_REQUEST['error'])) {
@@ -195,6 +208,20 @@ Class PkliLogin {
 	// No text variable has been setup, pass default
         
         return "<a href='".$url."'>".__('Login with LinkedIn','linkedin-login')."</a>";
+    }
+    
+    // Updates the user's wordpress data based on his LinkedIn data
+    private function update_user_data($xml,$user_id=false){
+	$first_name = (string) $xml->{'first-name'};
+	$last_name = (string) $xml->{'last-name'};
+
+	if(!$user_id){
+	    $user_id = get_current_user_id();
+	}
+	// Update user data in database
+	$result = wp_update_user(array('ID' => $user_id, 'first_name' => $first_name, 'last_name' => $last_name));
+	
+	return $result;
     }
 
 }
