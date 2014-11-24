@@ -3,7 +3,7 @@ Contributors: arbet01
 Tags: linkedin, linkedin-api, social-login
 Requires at least: 3.0.1
 Tested up to: 4.0
-Stable tag: 0.3
+Stable tag: 0.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,6 +24,8 @@ List of features:
 * [wpli_login_link class = 'class1 class2'] will add the corresponding CSS classes to the generated link
 You can find more information here: [LinkedIn Login Plugin](http://thoughtengineer.com/wordpress-linkedin-login-plugin/ "Your WordPress LinkedIn Login Solution").
 
+* For Custom LinkedIn-API Development Services, please check my [LinkedIn API developer](http://thoughtengineer.com/linkedin-api-developer/ "LinkedIn API Developer") profile *
+
 == Installation ==
 1. Upload \"linkedin-login\" to the \"/wp-content/plugins/\" directory.
 1. Activate the plugin through the \"Plugins\" menu in WordPress.
@@ -38,6 +40,9 @@ You can find more information here: [LinkedIn Login Plugin](http://thoughtengine
 1. After creating the application, you will be able to see your API key and secret. Copy and paste them into your plugin. 
 
 == Changelog ==
+
+= 0.3.1 =
+* Updated readme file description
 
 = 0.3 = 
 * First Name and Last Name automatically retrieved from LinkedIn and updated in wordpress database upon every login
