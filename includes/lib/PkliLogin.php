@@ -88,6 +88,9 @@ Class PkliLogin {
     // Logs in a user after he has authorized his LinkedIn account
     function process_login() {
 
+	// Action hook that user has authenticated his LinkedIN account
+	do_action('pkli_linkedin_authenticated');
+	
         // Action exists on login form and code is sent back
         if ( isset($_REQUEST['action']) && ($_REQUEST['action'] == "pkli_login")  && isset($_REQUEST['code'])) {
             

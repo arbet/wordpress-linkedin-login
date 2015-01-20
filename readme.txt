@@ -43,6 +43,8 @@ You can find more information here: [LinkedIn Login Plugin](http://thoughtengine
 
 == Changelog ==
 
+= 0.4 = 
+* Added action pkli_linkedin_authenticated to allow developers to immediately hook after plugin has authenticated.
 = 0.3.2 = 
 
 * Fixed PHP notice showing on plugin activation
