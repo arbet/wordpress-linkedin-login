@@ -1,10 +1,12 @@
 <?php
 /*
  * Piklist Checker
- * Version: 0.5.0
+ * Version: 0.6.0
  *
  * Verifies that Piklist is installed and activated.
- * If not, plugin will be deactivated and user will be notifed.
+ * If not:
+ ** Your plugin will be deactivated and user will be notifed.
+ ** Themes will show a notice.
  *
  * Developers:
  ** Instructions on how to use this file in your plugin can be found here:
@@ -25,14 +27,23 @@ if (!class_exists('Piklist_Checker'))
   {
     private static $plugins = array();
 
+    private static $theme = false;
+
+    private static $plugin_list = '';
+
     public static function admin_notices()
     {
       add_action('network_admin_notices', array('piklist_checker', 'show_message'));
       add_action('admin_notices', array('piklist_checker', 'show_message'));
     }
 
-    public static function check($this_plugin)
+    public static function check($this_plugin, $checking = 'plugin')
     {
+      if(class_exists('Piklist'))
+      {
+        return true; 
+      }
+
       global $pagenow;
 
       if ($pagenow == 'update.php' || $pagenow == 'update-core.php')
@@ -40,42 +51,33 @@ if (!class_exists('Piklist_Checker'))
         return true;
       }
 
-      require_once(ABSPATH . '/wp-admin/includes/plugin.php'); 
-
-      if (is_multisite())
+      if($checking == 'plugin')
       {
-        if (is_plugin_active_for_network(plugin_basename($this_plugin)))
+        require_once(ABSPATH . '/wp-admin/includes/plugin.php');
+
+        if (is_multisite())
         {
-          if (is_plugin_active_for_network('piklist/piklist.php'))
+          if (is_plugin_active_for_network(plugin_basename($this_plugin)))
           {
-            return true; 
+            piklist_checker::deactivate_plugins($this_plugin, 'network');
           }
           else
           {
-              self::deactivate_plugins($this_plugin, 'network');
+            piklist_checker::deactivate_plugins($this_plugin, 'single-network');
           }
         }
         else
         {
-          if(is_plugin_active('piklist/piklist.php'))
-          {
-            return true; 
-          }
-          else
-          {
-            self::deactivate_plugins($this_plugin, 'single-network');
-          }
+          piklist_checker::deactivate_plugins($this_plugin, 'single');
         }
       }
       else
       {
-        if(is_plugin_active('piklist/piklist.php'))
+        piklist_checker::$theme = true;
+
+        if(!defined('TYPE'))
         {
-          return true; 
-        }
-        else
-        {
-          self::deactivate_plugins($this_plugin, 'single');
+          define('TYPE', 'single');
         }
       }
     }
@@ -91,13 +93,16 @@ if (!class_exists('Piklist_Checker'))
         $plugins = array_flip(get_site_option('active_sitewide_plugins', array()));
       }
 
-      define('TYPE', $type);
+      if(!defined('TYPE'))
+      {
+        define('TYPE', $type);
+      }
 
       foreach ($plugins as $plugin)
       {
         if (strstr($this_plugin, $plugin))
         {
-          array_push(self::$plugins, $this_plugin);
+          array_push(piklist_checker::$plugins, $this_plugin);
           
           deactivate_plugins($plugin);
           
@@ -120,19 +125,35 @@ if (!class_exists('Piklist_Checker'))
 
       <?php ob_start(); ?>
 
-        <h3><?php _e('The following plugin(s) require Piklist, and have been deactivated:', 'piklist'); ?></h3>
+        <?php if(piklist_checker::$theme == true) : ?>
 
-        <ul>
-          <?php foreach(self::$plugins as $plugin): $data = get_plugin_data($plugin); ?>
-            <li>
-              <strong><?php echo $data['Title']; ?></strong>
-              <br />
-              <?php echo $data['Description']; ?>
-            </li>
-          <?php endforeach; ?>
-        </ul>
+          <p><strong><?php _e('Your theme requires PIKLIST to work properly.', 'piklist'); ?></strong></p>
+
+        <?php endif; ?>
+
+        <?php if(!empty(piklist_checker::$plugins)) : ?>
+
+          <p>
+
+            <strong>
+
+              <?php _e('The following plugin(s) require PIKLIST, and have been deactivated:', 'piklist'); ?>
+            
+              <?php foreach(piklist_checker::$plugins as $plugin): $data = get_plugin_data($plugin); ?>
+              
+                  <?php piklist_checker::$plugin_list = piklist_checker::$plugin_list . $data['Title'] . ', '; ?>
+               
+              <?php endforeach; ?>
+
+              <?php echo rtrim(piklist_checker::$plugin_list, ", "); ?>
+  
+            </strong>
+
+          </p>
+
+        <?php endif; ?>
      
-        <h3><?php _e('You can:', 'piklist'); ?></h3>
+        <h4><?php _e('You can:', 'piklist'); ?></h4>
 
         <ol>
 
@@ -161,7 +182,17 @@ if (!class_exists('Piklist_Checker'))
               echo '<li>' . $install . '</li>';
 
             }
-            printf(__('%1$s %2$sDismiss this message.', 'piklist'),'<li>', '<a href="' . $url_proper_dashboard . '">','</a>', '</li>');
+
+            if(!empty(piklist_checker::$plugins)) :
+
+              printf(__('%1$s %2$sDismiss this message.', 'piklist'),'<li>', '<a href="' . $url_proper_dashboard . '">','</a>', '</li>');
+
+            else :
+
+              printf(__('%1$s %2$sChange your theme.', 'piklist'),'<li>', '<a href="' . admin_url() . 'themes.php' . '">','</a>', '</li>');
+              
+
+            endif;
             
           ?>
 
@@ -169,6 +200,7 @@ if (!class_exists('Piklist_Checker'))
 
 
         <?php
+
           $message = ob_get_contents();
 
           ob_end_clean();
@@ -178,12 +210,12 @@ if (!class_exists('Piklist_Checker'))
     
     public static function show_message($message, $errormsg = true)
     {
-      if (!empty(self::$plugins)) : ?>
+      if (!empty(piklist_checker::$plugins) || piklist_checker::$theme == true) : ?>
 
         <div class="error">
 
             <p>
-              <?php echo self::message(); ?>
+              <?php echo piklist_checker::message(); ?>
             </p>
 
         </div>
@@ -195,19 +227,28 @@ if (!class_exists('Piklist_Checker'))
   
   piklist_checker::admin_notices();
 
+}
 
 /*
  * Changelog
  *
-   
-   = 0.5.0 =
+ *
+
+ = 0.6.0 =
+ * Faster checks.
+ * Works with themes that support Piklist.
+
+ = 0.5.1 =
+ * Check if class Piklist exists instead of is_plugin_active.
+
+ = 0.5.0 =
  * Now runs in the WordPress admin for a better user experience.
 
-   = 0.4.2 =
+ = 0.4.2 =
  * Check if is_plugin_active_for_network function exists
  * Updated to Text Domain: Piklist
 
-  = 0.4.1 =
+ = 0.4.1 =
  * Fixed Unterminated Comment Notice
 
  = 0.4.0 =
@@ -221,8 +262,5 @@ if (!class_exists('Piklist_Checker'))
 
  = 0.1.0 =
  * Initial release
- 
- */
 
-}
-?>
+ */

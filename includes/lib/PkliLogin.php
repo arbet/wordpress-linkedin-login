@@ -88,9 +88,8 @@ Class PkliLogin {
     // Logs in a user after he has authorized his LinkedIn account
     function process_login() {
 
-	//var_dump($_REQUEST);var_dump($_SESSION);die();
         // Action exists on login form and code is sent back
-        if ( ($_REQUEST['action'] == "pkli_login")  && isset($_REQUEST['code'])) {
+        if ( isset($_REQUEST['action']) && ($_REQUEST['action'] == "pkli_login")  && isset($_REQUEST['code'])) {
             
 
                 // Check if state is existent to avoid request forgery
