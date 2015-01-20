@@ -24,7 +24,7 @@ List of features:
 * [wpli_login_link class = 'class1 class2'] will add the corresponding CSS classes to the generated link
 You can find more information here: [LinkedIn Login Plugin](http://thoughtengineer.com/wordpress-linkedin-login-plugin/ "Your WordPress LinkedIn Login Solution").
 
-* If you want to contribute to development, please visit our (https://github.com/arbet/wordpress-linkedin-login/ "Github Repository")
+* If you want to contribute to development, please visit our [Github Repository](https://github.com/arbet/wordpress-linkedin-login/ "Github Repository")
 
 * For Custom LinkedIn-API Development Services, please check my [LinkedIn API developer](http://thoughtengineer.com/linkedin-api-developer/ "LinkedIn API Developer") profile
 
