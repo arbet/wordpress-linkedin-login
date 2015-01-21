@@ -113,7 +113,7 @@ Class PkliLogin {
                     
                     // Get first name, last name and email address, and load 
                     // response into XML object
-                    $xml = simplexml_load_string($this->oauth->get('https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address)'));
+                    $xml = simplexml_load_string($this->oauth->get('https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address,summary,site-standard-profile-request)'));
                     
                     // Get the user's email address
                     $email = (string) $xml->{'email-address'};
@@ -142,9 +142,7 @@ Class PkliLogin {
                     // Invalid user email
                     else {
                         echo $this->get_login_error($email);
-                    }
-		    
-		    $__id = $user_id;
+                    }		  
 		    
 		    // Signon user by ID
 		    wp_set_auth_cookie($user_id);
@@ -216,13 +214,16 @@ Class PkliLogin {
     private function update_user_data($xml,$user_id=false){
 	$first_name = (string) $xml->{'first-name'};
 	$last_name = (string) $xml->{'last-name'};
-
+	$description = (string) $xml->{'summary'};
+	$linkedin_url = (string) $xml->{'site-standard-profile-request'}->url;
+	
 	if(!$user_id){
 	    $user_id = get_current_user_id();
 	}
 	// Update user data in database
-	$result = wp_update_user(array('ID' => $user_id, 'first_name' => $first_name, 'last_name' => $last_name));
+	$result = wp_update_user(array('ID' => $user_id, 'first_name' => $first_name, 'last_name' => $last_name, 'description' => $description, 'user_url' => $linkedin_url));
 	
+	// Store all profile fields as metadata values
 	return $result;
     }
 
