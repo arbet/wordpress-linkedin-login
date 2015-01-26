@@ -3,7 +3,7 @@ Contributors: arbet01
 Tags: linkedin, linkedin-api, social-login
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stable tag: 0.4
+Stable tag: 0.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -43,6 +43,8 @@ You can find more information here: [LinkedIn Login Plugin](http://thoughtengine
 
 == Changelog ==
 
+= 0.4.1 =
+* FIXED: LinkedIn's latest access token wasn't being stored in the db
 = 0.4 = 
 * Added action pkli_linkedin_authenticated to allow developers to immediately hook after plugin has authenticated.
 * Plugin now stores user's profile summary on profile description

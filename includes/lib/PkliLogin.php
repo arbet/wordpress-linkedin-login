@@ -156,7 +156,7 @@ Class PkliLogin {
 		    }
 
 		    // Store the user's access token as a meta object
-		    add_user_meta($user_id,'pkli_access_token',$access_token,true);
+		    update_user_meta($user_id,'pkli_access_token',$access_token,true);
 
 		    // Update the user's data from LinkedIn
 		    $this->update_user_data($xml, $user_id);
