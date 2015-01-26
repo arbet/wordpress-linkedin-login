@@ -159,7 +159,7 @@ Class PkliLogin {
 		    $this->update_user_data($xml, $user_id);
 
 		    // Do action hook that user has authenticated his LinkedIN account for developers to hook into
-		    do_action('pkli_linkedin_authenticated');		    
+		    do_action('pkli_linkedin_authenticated', $user_id);		    
 		    
 		    // Validate URL as absolute
 		    if(filter_var($redirect, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED))
