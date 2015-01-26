@@ -87,9 +87,6 @@ Class PkliLogin {
 
     // Logs in a user after he has authorized his LinkedIn account
     function process_login() {
-
-	// Action hook that user has authenticated his LinkedIN account
-	do_action('pkli_linkedin_authenticated');
 	
         // Action exists on login form and code is sent back
         if ( isset($_REQUEST['action']) && ($_REQUEST['action'] == "pkli_login")  && isset($_REQUEST['code'])) {
@@ -161,6 +158,9 @@ Class PkliLogin {
 		    // Update the user's data from LinkedIn
 		    $this->update_user_data($xml, $user_id);
 
+		    // Do action hook that user has authenticated his LinkedIN account for developers to hook into
+		    do_action('pkli_linkedin_authenticated');		    
+		    
 		    // Validate URL as absolute
 		    if(filter_var($redirect, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED))
 			wp_safe_redirect($redirect);
