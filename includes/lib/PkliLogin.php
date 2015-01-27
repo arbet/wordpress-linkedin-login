@@ -118,6 +118,9 @@ Class PkliLogin {
 		    // Logout any logged in user before we start to avoid any issues arising
 		    wp_logout();
 		    
+		    // Get plugin option
+		    $li_options = get_option('pkli_basic_options');
+		    
                     // Sign in the user if the email already exists
                     if(email_exists($email)){
                         
@@ -126,6 +129,11 @@ Class PkliLogin {
                         
 			$user_id = $user->ID;
 			
+			// Use default redirect in case no redirect has been specified
+			if( ($redirect == false)  || ($redirect == '') ){
+			    $redirect = $li_options['li_redirect_url'];
+			}			
+			
                     }
                     
                     // User is signing in for the first time 
@@ -133,6 +141,11 @@ Class PkliLogin {
                         
                         // Create user
                         $user_id = wp_create_user( $email, wp_generate_password(16), $email );
+			
+			// Use registration redirect URL
+			if( ($redirect == false)  || ($redirect == '') ){
+			    $redirect = $li_options['li_registration_redirect_url'];
+			}			
                         
                     }
                     
@@ -143,14 +156,6 @@ Class PkliLogin {
 		    
 		    // Signon user by ID
 		    wp_set_auth_cookie($user_id);
-
-		    // Redirect to URL if set
-		    $li_keys = get_option('pkli_basic_options');
-
-		    // Use default redirect in case no redirect has been specified
-		    if( ($redirect == false)  || ($redirect == '') ){
-			$redirect = $li_keys['li_redirect_url'];
-		    }
 
 		    // Store the user's access token as a meta object
 		    update_user_meta($user_id,'pkli_access_token',$access_token,true);

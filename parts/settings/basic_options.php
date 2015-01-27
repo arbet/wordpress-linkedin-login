@@ -32,10 +32,21 @@ piklist('field', array(
   ,'field' => 'li_redirect_url'
   ,'label' => __('Redirect URL','linkedin-login')
   ,'description' => __('The absolute URL to redirect users to after login. If left blank or points to external host, will redirect to the dashboard page.','linkedin-login')
-  ,'help' => __('Write the full URL to redirect to after login, e.g. http://example.com/page.php','linkedin-login'),
+  ,'help' => __('Write the full URL to redirect to after login, e.g. http://example.com/redirect/','linkedin-login'),
   'value' => __('','linkedin-login')
   ,'attributes' => array(
   'class' => 'text'
   )
  ));
  
+piklist('field', array(
+  'type' => 'text'
+  ,'field' => 'li_registration_redirect_url'
+  ,'label' => __('Sign-Up Redirect URL','linkedin-login')
+  ,'description' => __('Users are redirected to this URL when they register via their LinkedIn account. This is useful if you want to show them a one-time welcome message after registration. If left blank or points to external host, will redirect to the dashboard page.','linkedin-login')
+  ,'help' => __('Write the full URL to redirect to after registration, e.g. http://example.com/signup-thank-you/','linkedin-login'),
+  'value' => __('','linkedin-login')
+  ,'attributes' => array(
+  'class' => 'text'
+  )
+ ));
