@@ -199,20 +199,28 @@ Class PkliLogin {
 </div>';
     }
     
+    // Used by shortcode in order to get the login link
     public function get_login_link($attributes = false){
         
-	if($attributes != false){
 	    // extract data from array
-	    extract( shortcode_atts( array('text' => '', 'redirect'=> '' , 'class' => ''), $attributes ) );
+	    extract( shortcode_atts( array('text' => 'Login With LinkedIn', 'img' => PKLI_URL.'includes/assets/img/linkedin-button.png', 'redirect' => '' , 'class' => ''), $attributes ) );
 
-	    $url = $this->get_auth_url($redirect);
+	    $auth_url = $this->get_auth_url($redirect);
 
-	    return "<a href='".$url."' class='$class'>".__($text,'linkedin-login')."</a>";
-	}
-	
-	// No text variable has been setup, pass default
-        
-        return "<a href='".$url."'>".__('Login with LinkedIn','linkedin-login')."</a>";
+	    // User has specified an image
+	    if(isset($attributes['img']) ){
+		return "<a href='".$auth_url."' class='$class'><img src='".$img."' /></a>";
+	    }
+	    
+	    // User has specified text
+	    if(isset($attributes['text']) ){
+		return "<a href='".$auth_url."' class='$class'>".$text."</a>";
+	    }
+	    
+	    // Default fields
+	    return "<a href='".$auth_url."' class='$class'><img src='".$img."' /></a>";
+	    
+	        
     }
     
     // Updates the user's wordpress data based on his LinkedIn data

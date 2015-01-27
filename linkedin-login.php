@@ -3,7 +3,7 @@
  * Plugin Name: WP LinkedIn Login
  * Plugin URI: http://thoughtengineer.com/wordpress-linkedin-login-plugin
  * Description: Enables login with LinkedIn functionality for your website
- * Version: 0.5
+ * Version: 0.5.2
  * Author: Samer Bechara
  * Author URI: http://thoughtengineer.com/
  * Text Domain: linkedin-login
@@ -33,6 +33,7 @@ defined('ABSPATH') or die("No script kiddies please!");
 
 // Define plugin path
 define( 'PKLI_PATH', plugin_dir_path( __FILE__ ) );
+define( 'PKLI_URL', plugin_dir_url(__FILE__));
 
 // Require PkliLogin class
 require_once (PKLI_PATH.'/includes/lib/PkliLogin.php');
@@ -68,10 +69,10 @@ function pkli_init()
       ,'capability' => 'manage_options'
       ,'menu_slug' => 'linkedin_login'
       ,'setting' => 'pkli_basic_options'
-      //,'menu_icon' => plugins_url('piklist/parts/img/piklist-icon.png')
-      //,'page_icon' => plugins_url('piklist/parts/img/piklist-page-icon-32.png')
+      ,'menu_icon' => PKLI_URL.'includes/assets/img/linkedin.png'
+      ,'page_icon' => PKLI_URL.'includes/assets/img/linkedin.png'
       ,'single_line' => false
-      //,'default_tab' => 'Advanced'
+      ,'default_tab' => 'Plugin Settings'
       ,'save_text' => __('Save LinkedIn Settings','linkedin-login')
     );
  

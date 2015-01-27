@@ -2,6 +2,7 @@
 /*
  Title: LinkedIn API Keys
  Setting: pkli_basic_options
+ Tab Order: 10
  */
 piklist('field', array(
   'type' => 'text'
