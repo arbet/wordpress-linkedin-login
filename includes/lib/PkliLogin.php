@@ -22,12 +22,23 @@ Class PkliLogin {
     const _TOKEN_URL = 'https://www.linkedin.com/uas/oauth2/accessToken';
     const _BASE_URL = 'https://api.linkedin.com/v1';
     
+    // The URI to redirect to after OAuth success
     public $redirect_uri;
+    
+    // LinkedIn Application Key
     public $li_api_key;
+    
+    // LinkedIn Application Secret
     public $li_secret_key;
+    
+    // Stores Access Token
     public $access_token;
     
+    // Stores OAuth Object
     public $oauth;
+    
+    // Stores the user redirect after login
+    public $user_redirect;
 
     public function __construct() {
 
@@ -88,77 +99,23 @@ Class PkliLogin {
     // Logs in a user after he has authorized his LinkedIn account
     function process_login() {
 	
-        // Action exists on login form and code is sent back
-        if ( isset($_REQUEST['action']) && ($_REQUEST['action'] == "pkli_login")  && isset($_REQUEST['code'])) {
-            
+        // Check if this is a LinkedIn Sign-in Request
+        if ( $this->is_linkedin_signin()) {            
 
-                // Check if state is existent to avoid request forgery
-                if (isset($_SESSION['li_api_state'][$_REQUEST['state']])) {
+		    // Set redirect URL
+		    $this->set_redirect_url();
 
-		    // Get redirect URL
-		    $redirect = $_SESSION['li_api_state'][$_REQUEST['state']];
+		    // Get profile XML response
+		    $xml = $this->get_linkedin_profile();
 		    
-                    // State should be deleted as it is no longer needed
-                    unset($_SESSION['li_api_state']);
-
-                    // Use GET method since POST isn't working
-                    $this->oauth->curl_authenticate_method = 'GET';
-                    
-                    // Request access token
-                    $response = $this->oauth->authenticate($_REQUEST['code']);
-                    $access_token = $response->{'access_token'};
-                    
-                    // Get first name, last name and email address, and load 
-                    // response into XML object
-                    $xml = simplexml_load_string($this->oauth->get('https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address,summary,site-standard-profile-request)'));
-                    
-                    // Get the user's email address
-                    $email = (string) $xml->{'email-address'};
- 
-		    // Logout any logged in user before we start to avoid any issues arising
-		    wp_logout();
-		    
-		    // Get plugin option
-		    $li_options = get_option('pkli_basic_options');
-		    
-                    // Sign in the user if the email already exists
-                    if(email_exists($email)){
-                        
-                        // Get the user ID by email
-                        $user = get_user_by('email',$email);
-                        
-			$user_id = $user->ID;
-			
-			// Use default redirect in case no redirect has been specified
-			if( ($redirect == false)  || ($redirect == '') ){
-			    $redirect = $li_options['li_redirect_url'];
-			}			
-			
-                    }
-                    
-                    // User is signing in for the first time 
-                    elseif(is_email($email)) {
-                        
-                        // Create user
-                        $user_id = wp_create_user( $email, wp_generate_password(16), $email );
-			
-			// Use registration redirect URL
-			if( ($redirect == false)  || ($redirect == '') ){
-			    $redirect = $li_options['li_registration_redirect_url'];
-			}			
-                        
-                    }
-                    
-                    // Invalid user email
-                    else {
-                        echo $this->get_login_error($email);
-                    }		  
+		    // Authenticate the user based on his LinkedIn profile data
+		    $user_id = $this->authenticate_user($xml);		   
 		    
 		    // Signon user by ID
 		    wp_set_auth_cookie($user_id);
 
 		    // Store the user's access token as a meta object
-		    update_user_meta($user_id,'pkli_access_token',$access_token,true);
+		    update_user_meta($user_id,'pkli_access_token',$this->access_token,true);
 
 		    // Update the user's data from LinkedIn
 		    $this->update_user_data($xml, $user_id);
@@ -167,12 +124,12 @@ Class PkliLogin {
 		    do_action('pkli_linkedin_authenticated', $user_id);		    
 		    
 		    // Validate URL as absolute
-		    if(filter_var($redirect, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED))
-			wp_safe_redirect($redirect);
+		    if(filter_var($this->user_redirect, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED))
+			wp_safe_redirect($this->user_redirect);
 		    // Invalid redirect URL, we'll redirect to admin URL
 		    else
 			wp_redirect( admin_url() );		    
-                }
+                
             
         }
         // Getting an error, redirect to login page
@@ -181,6 +138,134 @@ Class PkliLogin {
         }
     }
 
+    /*
+     * Get the user LinkedIN profile and return it as XML
+     */
+    
+    private function get_linkedin_profile() {
+	
+	// Use GET method since POST isn't working
+	$this->oauth->curl_authenticate_method = 'GET';
+
+	// Request access token
+	$response = $this->oauth->authenticate($_REQUEST['code']);
+	$this->access_token = $response->{'access_token'};
+
+	// Get first name, last name and email address, and load 
+	// response into XML object
+	$xml = simplexml_load_string($this->oauth->get('https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address,summary,site-standard-profile-request)'));  
+	
+	return $xml;
+    }
+    /*
+     * Checks if this is a LinkedIn sign-in request for our plugin
+     */
+    private function is_linkedin_signin() {
+	
+	// If no action is requested or the action is not ours
+	if(!isset($_REQUEST['action']) || ($_REQUEST['action'] != "pkli_login") ) {
+	    return false;
+	}
+	
+	// If a code is not returned, then OAuth did not proceed properly
+	if (! isset($_REQUEST['code']) )	{
+	    return false;
+	}
+	
+	// If state is not set, there might be a request forgery
+	// TODO: Check if the state received is the same we sent for further security
+	if ( ! isset($_SESSION['li_api_state'][$_REQUEST['state']] )) {
+	    return false;
+	}
+
+	// This is a LinkedIn signing-request
+	return true;
+    }
+    /*
+     * Sets the redirect URL for the user after logging in
+     */
+    private function set_redirect_url() {
+
+	// Get redirect URL
+	$this->user_redirect = $_SESSION['li_api_state'][$_REQUEST['state']];
+
+	// State should be deleted as it is no longer needed
+	unset($_SESSION['li_api_state']);
+	
+	// Get plugin option
+	$li_options = get_option('pkli_basic_options');
+
+	// Use default redirect in case no redirect has been specified
+	if( ($this->user_redirect == false)  || ($this->user_redirect == '') ){
+	    $this->user_redirect = $li_options['li_redirect_url'];
+	}		    
+
+    }
+    /*
+     * Authenticate a user by his LinkedIn ID first, and his email address then. IF he doesn't exist, the function creates him based on his LinkedIn email address
+     * 
+     * @param	string	$linkedin_id	The XML response by LinkedIN
+     */
+    private function authenticate_user($xml) {
+	
+	// Logout any logged in user before we start to avoid any issues arising
+	wp_logout();	
+	
+	// Get the user's email address
+	$email = (string) $xml->{'email-address'};
+
+	// Get the user's application-specific LinkedIn ID
+	$linkedin_id = (string) $xml->{'id'};	
+	
+	// See if a user with the above LinkedIn ID exists in our database
+	$user_by_id = get_users(array('meta_key' => 'pkli_linkedin_id',
+					'meta_value' => $linkedin_id) );
+
+	// If he exists, return his ID
+	if(count($user_by_id) == 1) {
+
+	    $user_id = $user_by_id[0]->ID;						
+	    
+	    return $user_id;
+
+	}
+	
+	// Sign in the user if the email already exists
+	elseif(email_exists($email)){
+
+	    // Get the user ID by email
+	    $user = get_user_by('email',$email);
+
+	    $user_id = $user->ID;
+	    
+	    return $user_id;
+
+
+	}
+
+	// User is signing in for the first time 
+	elseif(is_email($email)) {
+
+	    // Create user
+	    $user_id = wp_create_user( $email, wp_generate_password(16), $email );
+	    
+		
+	    // Get plugin option
+	    $li_options = get_option('pkli_basic_options');
+
+	    // Set the user redirect URL
+	    $this->user_redirect = $li_options['li_registration_redirect_url'];
+
+
+	    return $user_id;
+	    	   
+
+	}		  	
+	
+	// Does not exist, return false
+	return false;
+    }
+    
     public function display_login_button() {
         echo $this->get_login_button();
     }
@@ -229,12 +314,16 @@ Class PkliLogin {
 	$last_name = (string) $xml->{'last-name'};
 	$description = (string) $xml->{'summary'};
 	$linkedin_url = (string) $xml->{'site-standard-profile-request'}->url;
+	$linkedin_id = (string) $xml->{'id'};
 	
 	if(!$user_id){
 	    $user_id = get_current_user_id();
 	}
 	// Update user data in database
 	$result = wp_update_user(array('ID' => $user_id, 'first_name' => $first_name, 'last_name' => $last_name, 'description' => $description, 'user_url' => $linkedin_url));
+	
+	// Store LinkedIn ID in database
+	update_user_meta($user_id, 'pkli_linkedin_id', $linkedin_id);
 	
 	// Store all profile fields as metadata values
 	return $result;

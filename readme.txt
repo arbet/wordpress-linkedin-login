@@ -3,7 +3,7 @@ Contributors: arbet01
 Tags: linkedin, linkedin-api, social-login
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stable tag: 0.5.2
+Stable tag: 0.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,10 @@ You can find more information here: [LinkedIn Login Plugin](http://thoughtengine
 1. After creating the application, you will be able to see your API key and secret. Copy and paste them into your plugin. 
 
 == Changelog ==
+
+= 0.6 = 
+* Fixed a bug when user changed his email address on LinkedIn or inside Wordpress, he would be registered as a new user
+* Refactored code for easier readability and modifications
 
 = 0.5.2 = 
 * Feature: Users can now specify image via shortcode
