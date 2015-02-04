@@ -114,6 +114,9 @@ Class PkliLogin {
 		    // Signon user by ID
 		    wp_set_auth_cookie($user_id);
 
+		    // Set current WP user so that authentication takes immediate effect without waiting for cookie
+		    wp_set_current_user($user_id); 
+		    
 		    // Store the user's access token as a meta object
 		    update_user_meta($user_id,'pkli_access_token',$this->access_token,true);
 
