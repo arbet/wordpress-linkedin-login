@@ -115,7 +115,7 @@ Class PkliLogin {
 	$xml = $this->get_linkedin_profile();
 
 	// Returns the user's WordPress ID after setting proper redirect URL
-	$user_id = $this->get_wp_user_id($xml);		   
+	$user_id = $this->authenticate_user($xml);		   
 
 	// Signon user by ID
 	wp_set_auth_cookie($user_id);
@@ -125,9 +125,6 @@ Class PkliLogin {
 
 	// Store the user's access token as a meta object
 	update_user_meta($user_id,'pkli_access_token',$this->access_token,true);
-
-	// Update the user's data from LinkedIn
-	$this->update_user_data($xml, $user_id);
 
 	// Do action hook that user has authenticated his LinkedIN account for developers to hook into
 	do_action('pkli_linkedin_authenticated', $user_id);		    
@@ -194,7 +191,7 @@ Class PkliLogin {
      * 
      * @param	string	$xml	The XML response by LinkedIN which contains profile data
      */
-    private function get_wp_user_id($xml) {
+    private function authenticate_user($xml) {
 	
 	// Logout any logged in user before we start to avoid any issues arising
 	wp_logout();	
@@ -218,7 +215,12 @@ Class PkliLogin {
 	    $user_id = $user_by_id[0]->ID;
 
 	    // User signs up with his LinkedIn ID for the first time, redirect him to reg URL
-	    $this->user_redirect = $li_options['li_redirect_url'];	    
+	    $this->user_redirect = $li_options['li_redirect_url'];
+	    
+	    // Update the user's data upon login if the option is enabled
+	    if($li_options['li_auto_profile_update'] == 'yes'){
+		$this->update_user_data($xml, $user_id);
+	    }
 	    
 	    return $user_id;
 
@@ -233,6 +235,10 @@ Class PkliLogin {
 	    // User signs up with his LinkedIn ID for the first time, redirect him to reg URL
 	    $this->user_redirect = $li_options['li_registration_redirect_url'];
 	    
+	    // Update the user's data upon login if the option is enabled
+	    if($li_options['li_auto_profile_update'] == 'yes'){
+		$this->update_user_data($xml, $user->ID);
+	    }	    
 	    // Return the user's ID
 	    return $user->ID;
 
@@ -248,6 +254,9 @@ Class PkliLogin {
 	    // Set the user redirect URL
 	    $this->user_redirect = $li_options['li_registration_redirect_url'];
 
+	    // Update the user's data, since this is his first sign-in
+	    $this->update_user_data($xml, $user_id);
+	    
 	    return $user_id;
 	    	   
 

@@ -51,3 +51,18 @@ piklist('field', array(
   'class' => 'text'
   )
  ));
+
+  piklist('field', array(
+    'type' => 'select'
+    ,'field' => 'li_auto_profile_update'
+    ,'label' => 'Retrieve LinkedIn profile data everytime?'
+    ,'description' => 'Should we update user profile data everytime they sign in?'
+    ,'help' => 'This option allows you to pull in the users data the first time, upon registration but not overwrite all of their information every time they login with the linkedin button. This is useful if users spend time creating a custom profile and then they later use the login with linkedin button. Disable this if you do not wnat their information to be overwritten'
+    ,'attributes' => array(
+      'class' => 'text'
+    )
+    ,'choices' => array(
+      'yes' => 'Yes'
+      ,'no' => 'No'
+    )
+  ));
