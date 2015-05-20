@@ -308,6 +308,8 @@ Class PkliLogin {
 	update_user_meta($user_id, 'pkli_linkedin_id', $linkedin_id);
 	
 	// Store all profile fields as metadata values
+	update_user_meta($user_id, 'pkli_linkedin_profile', array('first' => $first_name, 'last' => $last_name, 'description' => $description, 'linkedin_url' => $linkedin_url, 'linkedin_id' => $linkedin_id));
+
 	return $result;
     }
 
