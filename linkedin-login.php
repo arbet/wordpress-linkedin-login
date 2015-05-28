@@ -38,6 +38,9 @@ define( 'PKLI_URL', plugin_dir_url(__FILE__));
 // Require PkliLogin class
 require_once (PKLI_PATH.'/includes/lib/PkliLogin.php');
 
+// Require WP_Session Class
+require_once (PKLI_PATH.'/includes/lib/wp-session-manager/wp-session-manager.php');
+
 // Crete new PKLI object to register actions
 $linkedin = new PkliLogin();
 
