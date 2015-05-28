@@ -1,3 +1,0 @@
-[submodule "includes/lib/wp-session-manager"]
-	path = includes/lib/wp-session-manager
-	url = https://github.com/ericmann/wp-session-manager

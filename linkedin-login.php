@@ -39,7 +39,7 @@ define( 'PKLI_URL', plugin_dir_url(__FILE__));
 require_once (PKLI_PATH.'/includes/lib/PkliLogin.php');
 
 // Require WP_Session Class
-require_once (PKLI_PATH.'/includes/lib/wp-session-manager/wp-session-manager.php');
+require_once (PKLI_PATH.'/includes/lib/wp-session-manager-1.2.0/wp-session-manager.php');
 
 // Crete new PKLI object to register actions
 $linkedin = new PkliLogin();
@@ -81,13 +81,6 @@ function pkli_init()
  
     return $pages;
   }
-
-    
-    // Register session for tracking oauth state code and redirect URL
-    function register_session(){
-    if( !session_id() )
-        session_start();
-    }
     
     
 /*
@@ -96,8 +89,6 @@ function pkli_init()
  function pkli_login_load_translation_files() {
   load_plugin_textdomain('linkedin-login', false, 'linkedin-login/languages');
  }    
-    
-add_action('init','register_session',1);
 
 //add action to load language files
  add_action('plugins_loaded', 'pkli_login_load_translation_files');

@@ -39,11 +39,17 @@ Class PkliLogin {
     
     // Stores the user redirect after login
     public $user_redirect = false;
+    
+    // Stores our WordPress session object
+    public $wp_session;
 
     public function __construct() {
 
         // Setup redirect uri 
         $this->redirect_uri = wp_login_url() . '?action=pkli_login';
+	
+	// Initialize our WP session
+	$this->wp_session = WP_Session::get_instance();		
 
         // This action displays the LinkedIn Login button on the default WordPress Login Page
         add_action('login_form', array($this, 'display_login_button'));
@@ -73,7 +79,8 @@ Class PkliLogin {
 	    $this->oauth->access_token = get_user_meta(get_current_user_id(), 'pkli_access_token', true);
 	}
         // Add shortcode for getting LinkedIn Login URL
-        add_shortcode( 'wpli_login_link', array($this, 'get_login_link') );        
+        add_shortcode( 'wpli_login_link', array($this, 'get_login_link') );   
+
 
     }
 
@@ -83,9 +90,10 @@ Class PkliLogin {
         $state = wp_generate_password(12, false);
         $authorize_url = $this->oauth->authorizeUrl(array('scope' => 'r_basicprofile r_emailaddress',
             'state' => $state));
-
+	
         // Store state in database in temporarily till checked back
-        $_SESSION['li_api_state'][$state] = $redirect;
+        $this->wp_session['li_api_state'] = $state;
+	$this->wp_session['li_api_redirect'] = $redirect;
 
         return $authorize_url;
     }
@@ -176,9 +184,8 @@ Class PkliLogin {
 	    return false;
 	}
 	
-	// If state is not set, there might be a request forgery
-	// TODO: Check if the state received is the same we sent for further security
-	if ( ! isset($_SESSION['li_api_state'][$_REQUEST['state']] )) {
+	// If state is not set, or it is different than what we expect there might be a request forgery
+	if ( ! isset($this->wp_session['li_api_state'] ) || $_REQUEST['state'] != $this->wp_session['li_api_state']) {
 	    return false;
 	}
 
