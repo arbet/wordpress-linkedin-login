@@ -1,6 +1,6 @@
 <?php 
 /*
- Title: LinkedIn API Keys
+ Title: LinkedIn Login Options
  Setting: pkli_basic_options
  Tab Order: 10
  */
@@ -64,5 +64,19 @@ piklist('field', array(
     ,'choices' => array(
       'yes' => 'Yes'
       ,'no' => 'No'
+    )
+  ));
+  
+    piklist('field', array(
+    'type' => 'select'
+    ,'field' => 'li_override_profile_photo'
+    ,'label' => 'Override the user\'s profile picture?'
+    ,'description' => 'When enabled, this option fetches the user\'s profile picture from LinkedIn and overrides the default gravatar.com user profile picture used by WordPress'
+    ,'attributes' => array(
+      'class' => 'text'
+    )
+    ,'choices' => array(
+	'no' => 'No',
+	'yes' => 'Yes'
     )
   ));

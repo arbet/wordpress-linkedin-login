@@ -165,7 +165,7 @@ Class PkliLogin {
 
 	// Get first name, last name and email address, and load 
 	// response into XML object
-	$xml = simplexml_load_string($this->oauth->get('https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address,summary,site-standard-profile-request)'));  
+	$xml = simplexml_load_string($this->oauth->get('https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address,summary,site-standard-profile-request,picture-url)'));  
 	
 	return $xml;
     }
@@ -304,6 +304,7 @@ Class PkliLogin {
 	$description = (string) $xml->{'summary'};
 	$linkedin_url = (string) $xml->{'site-standard-profile-request'}->url;
 	$linkedin_id = (string) $xml->{'id'};
+	$picture_url = (string) $xml->{'picture-url'};
 	
 	if(!$user_id){
 	    $user_id = get_current_user_id();
@@ -315,7 +316,7 @@ Class PkliLogin {
 	update_user_meta($user_id, 'pkli_linkedin_id', $linkedin_id);
 	
 	// Store all profile fields as metadata values
-	update_user_meta($user_id, 'pkli_linkedin_profile', array('first' => $first_name, 'last' => $last_name, 'description' => $description, 'linkedin_url' => $linkedin_url, 'linkedin_id' => $linkedin_id));
+	update_user_meta($user_id, 'pkli_linkedin_profile', array('first' => $first_name, 'last' => $last_name, 'description' => $description, 'linkedin_url' => $linkedin_url, 'linkedin_id' => $linkedin_id, 'profile_picture' => $picture_url));
 
 	return $result;
     }

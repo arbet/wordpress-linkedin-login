@@ -41,8 +41,12 @@ require_once (PKLI_PATH.'/includes/lib/PkliLogin.php');
 // Require WP_Session Class
 require_once (PKLI_PATH.'/includes/lib/wp-session-manager-1.2.0/wp-session-manager.php');
 
-// Crete new PKLI object to register actions
+// Require Pkli_Mods class
+require_once (PKLI_PATH.'/includes/lib/class-pkli-mods.php');
+
+// Crete new objects to register actions
 $linkedin = new PkliLogin();
+$linkedin_mods = new Pkli_Mods();
 
 // Initialize piklist framework
 add_action('init', 'pkli_init');
