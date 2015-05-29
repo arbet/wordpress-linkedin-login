@@ -42,6 +42,9 @@ Class PkliLogin {
     
     // Stores our WordPress session object
     public $wp_session;
+    
+    // Stores our LinkedIn options 
+    public $li_options;
 
     public function __construct() {
 
@@ -62,6 +65,9 @@ Class PkliLogin {
         $this->li_api_key = $li_keys['li_api_key'];
         $this->li_secret_key = $li_keys['li_secret_key'];
         
+	// Get plugin options
+	$this->li_options = get_option('pkli_basic_options');
+	
         // Require OAuth2 client to process authentications
         require_once(PKLI_PATH . '/includes/lib/Pkli_OAuth2Client.php');
 
@@ -93,6 +99,8 @@ Class PkliLogin {
 	
         // Store state in database in temporarily till checked back
         $this->wp_session['li_api_state'] = $state;
+	
+	// Store redirect URL in session
 	$this->wp_session['li_api_redirect'] = $redirect;
 
         return $authorize_url;
@@ -115,8 +123,18 @@ Class PkliLogin {
 	}
 	
 	// If this is a user sign-in request, but the user denied granting access, redirect to login URL
-	if (isset($_REQUEST['error'])) {
-	    wp_redirect(wp_login_url());
+	if (isset($_REQUEST['error']) && $_REQUEST['error'] == 'access_denied') {
+	    
+	    // Get our cancel redirect URL
+	    $cancel_redirect_url = $this->li_options['li_cancel_redirect_url'];
+	    
+	    // Redirect to login URL if left blank
+	    if(empty($cancel_redirect_url)){
+		wp_redirect(wp_login_url());
+	    }
+	    
+	    // Redirect to our given URL
+	    wp_safe_redirect($cancel_redirect_url);
         }	          	
 
 	// Get profile XML response
@@ -209,9 +227,6 @@ Class PkliLogin {
 	// Get the user's application-specific LinkedIn ID
 	$linkedin_id = (string) $xml->{'id'};	
 	
-	// Get plugin option
-	$li_options = get_option('pkli_basic_options');
-	
 	// See if a user with the above LinkedIn ID exists in our database
 	$user_by_id = get_users(array('meta_key' => 'pkli_linkedin_id',
 					'meta_value' => $linkedin_id) );
@@ -221,11 +236,16 @@ Class PkliLogin {
 
 	    $user_id = $user_by_id[0]->ID;
 
-	    // User signs up with his LinkedIn ID for the first time, redirect him to reg URL
-	    $this->user_redirect = $li_options['li_redirect_url'];
+	    // No custom redirect URL has been specified
+	    if($this->wp_session['li_api_redirect'] === false) {
+		
+		// User signs up with his LinkedIn ID for the first time, redirect him to reg URL
+		$this->user_redirect = $this->li_options['li_redirect_url'];		
+		
+	    }	    
 	    
 	    // Update the user's data upon login if the option is enabled
-	    if($li_options['li_auto_profile_update'] == 'yes'){
+	    if($this->li_options['li_auto_profile_update'] == 'yes'){
 		$this->update_user_data($xml, $user_id);
 	    }
 	    
@@ -239,11 +259,15 @@ Class PkliLogin {
 	    // Get the user ID by email
 	    $user = get_user_by('email',$email);
 
-	    // User signs up with his LinkedIn ID for the first time, redirect him to reg URL
-	    $this->user_redirect = $li_options['li_registration_redirect_url'];
+	    // No custom redirect URL has been specified
+	    if($this->wp_session['li_api_redirect'] === false) {
+		
+		// User signs up with his LinkedIn ID for the first time, redirect him to reg URL
+		$this->user_redirect = $this->li_options['li_registration_redirect_url'];
 	    
+	    }
 	    // Update the user's data upon login if the option is enabled
-	    if($li_options['li_auto_profile_update'] == 'yes'){
+	    if($this->li_options['li_auto_profile_update'] == 'yes'){
 		$this->update_user_data($xml, $user->ID);
 	    }	    
 	    // Return the user's ID
@@ -259,7 +283,7 @@ Class PkliLogin {
 	    $user_id = wp_create_user( $email, wp_generate_password(16), $email );
 
 	    // Set the user redirect URL
-	    $this->user_redirect = $li_options['li_registration_redirect_url'];
+	    $this->user_redirect = $this->li_options['li_registration_redirect_url'];
 
 	    // Update the user's data, since this is his first sign-in
 	    $this->update_user_data($xml, $user_id);

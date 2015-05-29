@@ -67,8 +67,14 @@ Class Pkli_Mods {
 	 if ( $user && is_object( $user ) ) {
 
 		$li_profile = get_user_meta($user->ID, 'pkli_linkedin_profile', true);
-		$li_profile_pic = $li_profile['profile_picture'];
 		
+		// No data for this user exists, return (E.g. user is an admin)
+		if(empty($li_profile)) {
+		    return $avatar;
+		}
+		
+		// Get the user's LinkedIn profile pic
+		$li_profile_pic = $li_profile['profile_picture'];		
 		
 		 $avatar = "<img alt='{$alt}' src='{$li_profile_pic}' class='avatar avatar-{$size} photo' height='{$size}' width='{$size}' />";
 
