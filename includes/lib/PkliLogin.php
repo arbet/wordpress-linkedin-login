@@ -127,7 +127,7 @@ Class PkliLogin {
 	    
 	    // Get our cancel redirect URL
 	    $cancel_redirect_url = $this->li_options['li_cancel_redirect_url'];
-	    
+
 	    // Redirect to login URL if left blank
 	    if(empty($cancel_redirect_url)){
 		wp_redirect(wp_login_url());
@@ -135,7 +135,15 @@ Class PkliLogin {
 	    
 	    // Redirect to our given URL
 	    wp_safe_redirect($cancel_redirect_url);
-        }	          	
+        }
+	
+	// Another error occurred, create an error log entry
+	if (isset($_REQUEST['error'])) {
+	    $error = $_REQUEST['error'];
+	    $error_description = $_REQUEST['error_description'];
+	    error_log("WP_LinkedIn Login Error\nError: $error\nDescription: $error_description");
+	}
+	
 
 	// Get profile XML response
 	$xml = $this->get_linkedin_profile();
