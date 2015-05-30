@@ -22,9 +22,6 @@ Class PkliLogin {
     const _TOKEN_URL = 'https://www.linkedin.com/uas/oauth2/accessToken';
     const _BASE_URL = 'https://api.linkedin.com/v1';
     
-    // The URI to redirect to after OAuth success
-    public $redirect_uri;
-    
     // LinkedIn Application Key
     public $li_api_key;
     
@@ -47,9 +44,6 @@ Class PkliLogin {
     public $li_options;
 
     public function __construct() {
-
-        // Setup redirect uri 
-        $this->redirect_uri = wp_login_url() . '?action=pkli_login';
 	
 	// Initialize our WP session
 	$this->wp_session = WP_Session::get_instance();		
@@ -75,7 +69,7 @@ Class PkliLogin {
         $this->oauth = new Pkli_OAuth2Client($this->li_api_key, $this->li_secret_key);
         
         // Set Oauth URLs
-        $this->oauth->redirect_uri = $this->redirect_uri;
+        $this->oauth->redirect_uri = wp_login_url() . '?action=pkli_login';
         $this->oauth->authorize_url = self::_AUTHORIZE_URL;
         $this->oauth->token_url = self::_TOKEN_URL;
 	$this->oauth->api_base_url = self::_BASE_URL;
@@ -230,6 +224,9 @@ Class PkliLogin {
 	// Logout any logged in user before we start to avoid any issues arising
 	wp_logout();	
 	
+	// Set default redirect URL to the URL provided by shortcode and stored in session
+	$this->user_redirect = $this->wp_session['li_api_redirect'];
+	
 	// Get the user's email address
 	$email = (string) $xml->{'email-address'};
 
@@ -248,7 +245,7 @@ Class PkliLogin {
 	    // No custom redirect URL has been specified
 	    if($this->wp_session['li_api_redirect'] === false) {
 		
-		// User signs up with his LinkedIn ID for the first time, redirect him to reg URL
+		// User already exists in our database, redirect him to Login Redirect URL
 		$this->user_redirect = $this->li_options['li_redirect_url'];		
 		
 	    }	    
@@ -316,7 +313,7 @@ Class PkliLogin {
 
 	}
 	// extract data from array
-	extract( shortcode_atts( array('text' => 'Login With LinkedIn', 'img' => PKLI_URL.'includes/assets/img/linkedin-button.png', 'redirect' => '' , 'class' => ''), $attributes ) );
+	extract( shortcode_atts( array('text' => 'Login With LinkedIn', 'img' => PKLI_URL.'includes/assets/img/linkedin-button.png', 'redirect' => false , 'class' => ''), $attributes ) );
 
 	$auth_url = $this->get_auth_url($redirect);
 
