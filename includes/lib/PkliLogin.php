@@ -106,9 +106,10 @@ Class PkliLogin {
         return $authorize_url;
     }
 
-    // Returns the code for the login button
+    // This function displays the login button on the default WP login page
     public function display_login_button() {
-
+	
+	// User is not logged in, display login button
         echo "<p><a rel='nofollow' href='" . $this->get_auth_url() . "'>
                                             <img alt='LinkedIn' src='" . plugins_url() . "/linkedin-login/includes/assets/img/linkedin-button.png' />
         </a></p>";
@@ -308,23 +309,29 @@ Class PkliLogin {
     // Used by shortcode in order to get the login link
     public function get_login_link($attributes = false){
         
-	    // extract data from array
-	    extract( shortcode_atts( array('text' => 'Login With LinkedIn', 'img' => PKLI_URL.'includes/assets/img/linkedin-button.png', 'redirect' => '' , 'class' => ''), $attributes ) );
-
-	    $auth_url = $this->get_auth_url($redirect);
-
-	    // User has specified an image
-	    if(isset($attributes['img']) ){
-		return "<a href='".$auth_url."' class='$class'><img src='".$img."' /></a>";
-	    }
+	// Display the logged in message if user is already logged in
+	if(is_user_logged_in()) {
 	    
-	    // User has specified text
-	    if(isset($attributes['text']) ){
-		return "<a href='".$auth_url."' class='$class'>".$text."</a>";
-	    }
-	    
-	    // Default fields
+	    return $this->li_options['li_logged_in_message'];
+
+	}
+	// extract data from array
+	extract( shortcode_atts( array('text' => 'Login With LinkedIn', 'img' => PKLI_URL.'includes/assets/img/linkedin-button.png', 'redirect' => '' , 'class' => ''), $attributes ) );
+
+	$auth_url = $this->get_auth_url($redirect);
+
+	// User has specified an image
+	if(isset($attributes['img']) ){
 	    return "<a href='".$auth_url."' class='$class'><img src='".$img."' /></a>";
+	}
+
+	// User has specified text
+	if(isset($attributes['text']) ){
+	    return "<a href='".$auth_url."' class='$class'>".$text."</a>";
+	}
+
+	// Default fields
+	return "<a href='".$auth_url."' class='$class'><img src='".$img."' /></a>";
 	    
 	        
     }

@@ -92,3 +92,21 @@ piklist('field', array(
 	'yes' => 'Yes'
     )
   ));
+    
+piklist('field', array(
+  'type' => 'textarea'
+  ,'field' => 'li_logged_in_message'
+  ,'label' => __('Logged In Message','linkedin-login')
+  ,'description' => __('Enter a message you would like to show for logged in users in place of the login button. If left blank, the button is hidden and no message is shown.','linkedin-login')
+  ,'help' => __('Write a meaningful message for logged in users. Basic HTML tags are allowed: br, strong, em...','linkedin-login'),
+  'value' => __('','linkedin-login')
+  ,'attributes' => array(
+    'class' => 'large-text',
+    'rows' => 5
+  ),
+'sanitize' => array(
+      array(
+        'type' => 'wp_kses_post'
+      )
+    )
+ ));    
