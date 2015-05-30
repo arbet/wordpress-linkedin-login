@@ -2,8 +2,8 @@
 Contributors: arbet01
 Tags: linkedin, linkedin-api, social-login
 Requires at least: 3.0.1
-Tested up to: 4.2
-Stable tag: 0.7.1
+Tested up to: 4.2.2
+Stable tag: 0.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,14 @@ You can find more information here: [LinkedIn Login Plugin](http://thoughtengine
 1. After creating the application, you will be able to see your API key and secret. Copy and paste them into your plugin. 
 
 == Changelog ==
+
+= 0.8 = 
+* Feature: Users now can be redirected to different page if they decide not to authenticate via LinkedIn
+* Feature: User avatars are now fetched from LinkedIn and can override Gravatars via options page
+* Feature: A custom message can be now shown to logged in users
+* Fixed: Login button no longer shown for loggedin users
+* Fixed: Shortcode redirect attributes now working again properly
+* Fixed: Error logging added for additional troubleshooting
 
 = 0.7.1 = 
 * User LinkedIn profile data now being stored as a user meta under field pkli_linkedin_profile to help developers use the data in their themes/plugins
