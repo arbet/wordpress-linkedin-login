@@ -92,7 +92,9 @@ Class PkliLogin {
             'state' => $state));
 	
         // Store state in database in temporarily till checked back
-        $this->wp_session['li_api_state'] = $state;
+	if(!isset($this->wp_session['li_api_state']) ) {
+	    $this->wp_session['li_api_state'] = $state;
+	}
 	
 	// Store redirect URL in session
 	$this->wp_session['li_api_redirect'] = $redirect;
@@ -210,7 +212,9 @@ Class PkliLogin {
 	    return false;
 	}
 
-	// This is a LinkedIn signing-request
+	// This is a LinkedIn signing-request - unset state and return true
+	unset($this->wp_session['li_api_state']);
+	
 	return true;
     }
 
