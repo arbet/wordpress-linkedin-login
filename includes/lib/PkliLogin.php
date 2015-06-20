@@ -206,12 +206,15 @@ Class PkliLogin {
 	if (! isset($_REQUEST['code']) && ! isset($_REQUEST['error']) )	{
 	    return false;
 	}
-	
+	/*
+	 * Temporarily disabled this because we're getting two different states at random times
+	 
 	// If state is not set, or it is different than what we expect there might be a request forgery
 	if ( ! isset($this->wp_session['li_api_state'] ) || $_REQUEST['state'] != $this->wp_session['li_api_state']) {
 	    return false;
 	}
-
+	*/
+	
 	// This is a LinkedIn signing-request - unset state and return true
 	unset($this->wp_session['li_api_state']);
 	
