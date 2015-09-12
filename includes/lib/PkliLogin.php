@@ -188,7 +188,7 @@ Class PkliLogin {
 
 	// Get first name, last name and email address, and load 
 	// response into XML object
-	$xml = simplexml_load_string($this->oauth->get('https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address,summary,site-standard-profile-request,picture-url,location:(name,country:(code)),industry)'));  
+	$xml = simplexml_load_string($this->oauth->get('https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address,headline,specialties,positions:(id,title,summary,start-date,end-date,is-current,company),summary,site-standard-profile-request,picture-url,location:(name,country:(code)),industry)'));  
 	
 	return $xml;
     }
@@ -350,7 +350,27 @@ Class PkliLogin {
 	$picture_url = (string) $xml->{'picture-url'};
         $location = array('name' => (string) $xml->{'location'}->{'name'}, 'country_code' => (string) $xml->{'location'}->{'country'}->{'code'});
         $industry = (string) $xml->{'industry'};
-	
+        $headline = (string) $xml->{'headline'};
+        $specialties = (string) $xml->{'specialties'};
+        
+        // Get total positions
+        $total_positions = (int) $xml->positions->attributes()->total;
+        
+        // Depending on the total number of positions, LinkedIn returns data in a different format
+        switch($total_positions) {
+            case 1: 
+                $user_positions[] = array('title' => (string) $xml->positions->position->{'title'}, 'summary' => (string) $xml->positions->position->{'summary'} );
+                break;
+            case $total_positions > 1:
+                foreach($xml->positions->position as $position) {
+                    $user_positions[] = array('title' => (string) $position->{'title'}, 'summary' => (string) $position->{'summary'});
+                }
+                break;
+            default:
+                $user_positions = array();
+                break;
+        }
+        
 	if(!$user_id){
 	    $user_id = get_current_user_id();
 	}
@@ -361,7 +381,7 @@ Class PkliLogin {
 	update_user_meta($user_id, 'pkli_linkedin_id', $linkedin_id);
 	
 	// Store all profile fields as metadata values
-	update_user_meta($user_id, 'pkli_linkedin_profile', array('first' => $first_name, 'last' => $last_name, 'description' => $description, 'linkedin_url' => $linkedin_url, 'linkedin_id' => $linkedin_id, 'profile_picture' => $picture_url, 'location' => $location, 'industry' => $industry));
+	update_user_meta($user_id, 'pkli_linkedin_profile', array('first' => $first_name, 'last' => $last_name, 'description' => $description, 'linkedin_url' => $linkedin_url, 'linkedin_id' => $linkedin_id, 'profile_picture' => $picture_url, 'location' => $location, 'industry' => $industry, 'headline' => $headline, 'specialties' => $specialties, 'positions' => $user_positions));
 
 	return $result;
     }
