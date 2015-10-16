@@ -38,9 +38,6 @@ define( 'PKLI_URL', plugin_dir_url(__FILE__));
 // Require PkliLogin class
 require_once (PKLI_PATH.'/includes/lib/PkliLogin.php');
 
-// Require WP_Session Class
-require_once (PKLI_PATH.'/includes/lib/wp-session-manager-1.2.0/wp-session-manager.php');
-
 // Require Pkli_Mods class
 require_once (PKLI_PATH.'/includes/lib/class-pkli-mods.php');
 
