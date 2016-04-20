@@ -35,6 +35,9 @@ defined('ABSPATH') or die("No script kiddies please!");
 define( 'PKLI_PATH', plugin_dir_path( __FILE__ ) );
 define( 'PKLI_URL', plugin_dir_url(__FILE__));
 
+// Require Freemius Integration classs
+require_once (PKLI_PATH.'/includes/lib/class-pkli-freemius.php');
+
 // Require PkliLogin class
 require_once (PKLI_PATH.'/includes/lib/PkliLogin.php');
 
