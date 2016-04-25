@@ -1,9 +1,9 @@
 === LinkedIn Login ===
-Contributors: arbet01
+Contributors: arbet01, freemius
 Tags: linkedin, linkedin-api, social-login
 Requires at least: 3.0.1
 Tested up to: 4.5
-Stable tag: 0.8.7
+Stable tag: 0.8.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,6 +42,12 @@ You can find more information here: [LinkedIn Login Plugin](http://thoughtengine
 1. After creating the application, you will be able to see your API key and secret. Copy and paste them into your plugin. 
 
 == Changelog ==
+
+= 0.8.8 = 
+ * Fixed a bug in freemius integration which showed an error for users who did not have Piklist installed
+
+= 0.8.7 = 
+ * Added Freemius Integration
 
 = 0.8.6 =
 

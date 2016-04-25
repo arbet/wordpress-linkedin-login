@@ -3,7 +3,7 @@
  * Plugin Name: WP LinkedIn Login
  * Plugin URI: http://thoughtengineer.com/wordpress-linkedin-login-plugin
  * Description: Enables login with LinkedIn functionality for your website
- * Version: 0.8.7
+ * Version: 0.8.8
  * Author: Samer Bechara
  * Author URI: http://thoughtengineer.com/
  * Text Domain: linkedin-login
@@ -60,9 +60,14 @@ function pkli_init()
  
    if (!piklist_checker::check(__FILE__))
    {
+
      return;
    }
+   
+   // Initialize freemius after piklist is active, otherwise we'll get an insufficient permissions error
+   new PKLI_Freemius();
   }
+  
 }
 
     // Create settings page

@@ -104,5 +104,3 @@ class PKLI_Freemius {
     }    
     
 }
-
-new PKLI_Freemius();
