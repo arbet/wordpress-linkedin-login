@@ -354,14 +354,37 @@ Class PkliLogin {
         // Get total positions
         $total_positions = (int) $xml->positions->attributes()->total;
 
+        $addPosition = function($position) use (&$user_positions){
+            $company = array();
+
+            if(isset($position->company))
+            {
+                $company = array(
+                    "id" => (string)$position->company->{'id'},
+                    "name" => (string)$position->company->{'name'},
+                    "size" => (string)$position->company->{'size'},
+                    "type" => (string)$position->company->{'type'},
+                    "industry" => (string)$position->company->{'industry'},
+                );
+            }
+
+            $user_positions[] = array(
+                'title' => (string) $position->{'title'},
+                'summary' => (string) $position->{'summary'},
+                'is-current' => (string) $position->{'is-current'},
+                'company' => $company
+            );
+        };
+
         // Depending on the total number of positions, LinkedIn returns data in a different format
         switch ($total_positions) {
             case 1:
-                $user_positions[] = array('title' => (string) $xml->positions->position->{'title'}, 'summary' => (string) $xml->positions->position->{'summary'});
+                $addPosition($xml->positions->position);
+
                 break;
             case $total_positions > 1:
                 foreach ($xml->positions->position as $position) {
-                    $user_positions[] = array('title' => (string) $position->{'title'}, 'summary' => (string) $position->{'summary'});
+                    $addPosition($position);
                 }
                 break;
             default:
