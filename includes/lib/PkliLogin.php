@@ -267,6 +267,9 @@ Class PkliLogin {
                 $this->update_user_data($xml, $user_id);
             }
 
+            // Do action saying that user logged in via linkedin
+            do_action('pkli_login', $user_id);
+            
             return $user_id;
         }
 
@@ -286,6 +289,10 @@ Class PkliLogin {
             if ($this->li_options['li_auto_profile_update'] == 'yes') {
                 $this->update_user_data($xml, $user->ID);
             }
+            
+            // Run action that the user has logged in first time via LinkedIn
+            do_action('pkli_first_login', $user->ID);
+            
             // Return the user's ID
             return $user->ID;
         }
@@ -301,6 +308,9 @@ Class PkliLogin {
 
             // Update the user's data, since this is his first sign-in
             $this->update_user_data($xml, $user_id);
+            
+            // The action tells us that the user has registered via LinkedIn
+            do_action('pkli_registration', $user_id);
 
             return $user_id;
         }
