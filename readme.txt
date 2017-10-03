@@ -43,8 +43,9 @@ You can find more information here: [LinkedIn Login Plugin](http://thoughtengine
 
 == Changelog ==
 
-= 0.8.9= 
+= 0.9.0= 
  * Removed Freemius Integration
+ * Removed Piklist dependency to make install process easier
 
 = 0.8.8 = 
  * Fixed a bug in freemius integration which showed an error for users who did not have Piklist installed
