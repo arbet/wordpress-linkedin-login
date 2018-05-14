@@ -88,7 +88,10 @@ Class PkliLogin {
     public function get_auth_url($redirect = false) {
 
         $state = wp_generate_password(12, false);
-        $authorize_url = $this->oauth->authorizeUrl(array('scope' => 'r_basicprofile r_emailaddress',
+        //'r_basicprofile' and 'r_emailaddress' are default values
+        $this->li_options['li_list_scopes'] = !empty($this->li_options['li_list_scopes']) ? implode(' ', $this->li_options['li_list_scopes']) : 'r_basicprofile r_emailaddress';
+
+        $authorize_url = $this->oauth->authorizeUrl(array('scope' => $this->li_options['li_list_scopes'],
             'state' => $state));
 
         // Store state in database in temporarily till checked back
@@ -405,4 +408,3 @@ Class PkliLogin {
     }
 
 }
-

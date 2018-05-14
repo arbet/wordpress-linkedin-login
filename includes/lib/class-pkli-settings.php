@@ -55,6 +55,7 @@ class PKLI_Settings {
      */
 
     public function init_settings() {
+        require_once (PKLI_PATH.'/includes/lib/class-pkli-scopes.php');
 
 	register_setting( 'pkli_options_page', 'pkli_basic_options' );
 
@@ -115,6 +116,23 @@ class PKLI_Settings {
 		'pkli_general_options_section',
                 array('field_name' => 'li_cancel_redirect_url',
                     'field_description' => 'Users are redirected to this URL when they click Cancel on the LinkedIn Authentication page. This is useful if you want to show them a different option if for some reason they do not want to login with their LinkedIn account. If left blank or points to external host, will redirect back to default WordPress login page.')
+	);
+        
+        add_settings_field( 
+		'li_list_scopes', 
+		__( 'Scopes', 'linkedin-login' ), 
+		array($this, 'multiselect_field_display'),  
+		'pkli_options_page', 
+		'pkli_general_options_section',
+                array('field_name' => 'li_list_scopes',
+                    'field_description' => 'The list of LinkedIn scopes.',
+                    'args' => array(
+                        Pkli_Scopes::READ_BASIC_PROFILE => 'Basic profile',
+                        Pkli_Scopes::READ_EMAIL_ADDRESS => 'Email address',
+                        Pkli_Scopes::MANAGE_COMPANY => 'Company admin',
+                        Pkli_Scopes::SHARING => 'Share',
+                    )
+                )
 	);
 
 	add_settings_field( 
@@ -198,19 +216,40 @@ class PKLI_Settings {
 
         $field_name = $field_options['field_name'];
         $field_value = $this->get_field_value($field_name);
-    ?>
-    <select name='pkli_basic_options[<?php echo $field_name;?>]'>
-        <option value='yes' <?php selected($field_value, 'yes'); ?>>Yes</option>
-        <option value='no' <?php selected($field_value, 'no'); ?>>No</option>
-    </select>
-    <p class="description"><?php echo isset($field_options['field_description']) ? $field_options['field_description'] : ''; ?></p>
-    <?php
-
-}
-/*
- * Rendered at the start of the options section
- */
-function pkli_basic_options_section_callback() {
+        ?>
+        <select name='pkli_basic_options[<?php echo $field_name;?>]'>
+            <option value='yes' <?php selected($field_value, 'yes'); ?>>Yes</option>
+            <option value='no' <?php selected($field_value, 'no'); ?>>No</option>
+        </select>
+        <p class="description"><?php echo isset($field_options['field_description']) ? $field_options['field_description'] : ''; ?></p>
+        <?php
+    }
+    
+    /*
+     * Displays a multi select field
+     */
+    function multiselect_field_display($field_options){
+        $field_name = $field_options['field_name'];
+        $field_value = $this->get_field_value($field_name);
+        $field_value = is_array($field_value) ? $field_value : array();
+        $args = $field_options['args'];
+        ?>
+        <select name='pkli_basic_options[<?php echo $field_name;?>][]' multiple size="4">
+            <?php
+                if( !empty($args) ){
+                    foreach ($args as $key => $value) { ?>
+                        <option value='<?php echo $key?>' <?php echo in_array($key, $field_value) ? 'selected' : ''; ?>><?php echo $value; ?></option>
+                    <?php }
+                }
+            ?>
+        </select>
+        <p class="description"><?php echo isset($field_options['field_description']) ? $field_options['field_description'] : ''; ?></p>
+        <?php
+    }
+    /*
+     * Rendered at the start of the options section
+     */
+    function pkli_basic_options_section_callback() {
 
         echo __('For installation instructions, please visit <a href="http://thoughtengineer.com/wordpress-linkedin-login-plugin/" target="_blank">Installation Instructions Page</a>', 'linkedin-login');
 
