@@ -108,7 +108,7 @@ Class PkliLogin {
 
         // User is not logged in, display login button
         echo "<p><a rel='nofollow' href='" . $this->get_auth_url() . "'>
-                                            <img alt='LinkedIn' src='" . plugins_url() . "/linkedin-login/includes/assets/img/linkedin-button.png' />
+                                            <img alt='LinkedIn' src='" . PKLI_URL . "includes/assets/img/linkedin-button.png' />
         </a></p>";
 
     }
@@ -322,14 +322,23 @@ Class PkliLogin {
 
     // Used by shortcode in order to get the login link
     public function get_login_link($attributes = false) {
+        // extract data from array
+        extract(shortcode_atts(array('text' => 'Login With LinkedIn', 'img' => PKLI_URL . 'includes/assets/img/linkedin-button.png', 'redirect' => false, 'autoredirect' => false, 'class' => ''), $attributes));
 
         // Display the logged in message if user is already logged in
         if (is_user_logged_in()) {
-
+            if( $autoredirect != false && $redirect != false ){
+                //Use js because 'wp_redirect' doesn't work
+                ?>
+                <script>
+                document.location.href = '<?php echo home_url($redirect); ?>';
+                </script>
+                <?php                
+            }
+            
             return $this->li_options['li_logged_in_message'];
         }
-        // extract data from array
-        extract(shortcode_atts(array('text' => 'Login With LinkedIn', 'img' => PKLI_URL . 'includes/assets/img/linkedin-button.png', 'redirect' => false, 'class' => ''), $attributes));
+        
 
         $auth_url = $this->get_auth_url($redirect);
 
@@ -396,3 +405,4 @@ Class PkliLogin {
     }
 
 }
+
