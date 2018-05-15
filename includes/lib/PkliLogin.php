@@ -324,7 +324,7 @@ Class PkliLogin {
     }
 
     // Used by shortcode in order to get the login link
-    public function get_login_link($attributes = false) {
+    public function get_login_link($attributes = false, $content = '') {
         // extract data from array
         extract(shortcode_atts(array('text' => 'Login With LinkedIn', 'img' => PKLI_URL . 'includes/assets/img/linkedin-button.png', 'redirect' => false, 'autoredirect' => false, 'class' => ''), $attributes));
 
@@ -338,8 +338,10 @@ Class PkliLogin {
                 </script>
                 <?php                
             }
+            $html = $this->li_options['li_logged_in_message'].'<br/>';
+            $html .= $content != false ? $content : '';
             
-            return $this->li_options['li_logged_in_message'];
+            return $html;
         }
         
 
