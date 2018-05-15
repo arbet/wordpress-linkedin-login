@@ -404,6 +404,68 @@ Class PkliLogin {
 
         // Store all profile fields as metadata values
         update_user_meta($user_id, 'pkli_linkedin_profile', array('first' => $first_name, 'last' => $last_name, 'description' => $description, 'linkedin_url' => $linkedin_url, 'linkedin_id' => $linkedin_id, 'profile_picture' => $picture_url, 'location' => $location, 'industry' => $industry, 'headline' => $headline, 'specialties' => $specialties, 'positions' => $user_positions));
+                
+        //Is BuddyPress active?
+        if (class_exists('BuddyPress')) {
+            /*
+            * Buddypress Profile Custom Fields (Linikedin Fields | Buddypress Fields):        
+            * first-name -> First Name (Because the field 'Name' is user's nickname)
+            * last-name -> Last Name        
+            * headline -> Description        
+            * positions -> Position (! This field is a textarea)    
+            * picture-url -> The Image for User (This type field is textbox)
+            */
+            $arr_fields = array();
+            if( $first_name != false ){
+                $arr_fields['First Name'] = $first_name;
+            }
+            if( $last_name != false ){
+                $arr_fields['Last Name'] = $last_name;
+            }
+            if( $headline != false ){
+                $arr_fields['Description'] = $headline;
+            }
+            if( !empty($user_positions) ){
+                $arr_fields['Position'] = '';
+                foreach ($user_positions as $key => $value) {
+                    $arr_fields['Position'] .= $value['title'].'<br/>';
+                }            
+            }
+            if( $picture_url != false ){
+                $arr_fields['The Image for User'] = $picture_url;
+            }
+            
+            if(empty($arr_fields)){
+                return $result;
+            }
+            
+            global $wpdb;
+            
+            $table_prof_fields = $wpdb->prefix.'bp_xprofile_fields';
+            $table_prof_data = $wpdb->prefix.'bp_xprofile_data';
+
+            foreach ($arr_fields as $field_type => $field_value) {
+                    $sql = "SELECT prof_data.id FROM `{$table_prof_fields}` AS prof_fields INNER JOIN `{$table_prof_data}` AS prof_data ON prof_fields.id = prof_data.field_id WHERE prof_fields.name = '{$field_type}' AND prof_data.user_id = ".$user_id;
+                    $id = $wpdb->get_var( $sql );
+
+                    if( is_null($id) ){
+                            $sql = "SELECT id FROM `{$table_prof_fields}` WHERE name = '{$field_type}'";
+                            $field_id = $wpdb->get_var( $sql );
+                            if( !is_null($field_id) ){
+                                    $wpdb->insert(
+                                            $table_prof_data,
+                                            array( 'user_id' => $user_id, 'field_id' => $field_id, 'value' => $field_value, 'last_updated' => bp_core_current_time() ),
+                                            array( '%d', '%d', '%s', '%s' )
+                                    );		
+                            }
+                    }else{
+                            $wpdb->update( $table_prof_data,
+                                    array( 'value' => $field_value ),
+                                    array( 'id' => $id )
+                            );
+                    }
+            }
+        }
 
         return $result;
 
