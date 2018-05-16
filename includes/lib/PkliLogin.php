@@ -344,7 +344,13 @@ Class PkliLogin {
             return $html;
         }
         
-
+        if( $redirect != false){
+            // Validate URL as absolute
+            if( ! filter_var($redirect, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED) ){
+                $redirect = home_url($redirect);
+            }
+        }
+        
         $auth_url = $this->get_auth_url($redirect);
 
         // User has specified an image
