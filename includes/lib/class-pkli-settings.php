@@ -152,8 +152,7 @@ class PKLI_Settings {
 		'pkli_options_page', 
 		'pkli_general_options_section' ,
                 array('field_name' => 'li_override_profile_photo',
-                    'field_description' => 'When enabled, this option fetches the user\'s profile picture from LinkedIn and overrides the default gravatar.com user profile picture used by WordPress. If the plugin is setup to retrive new profile data on every login, the profile picture will be retrieved as well.')                
-
+                    'field_description' => 'When enabled, this option fetches the user\'s profile picture from LinkedIn and overrides the default gravatar.com user profile picture used by WordPress. If the plugin is setup to retrive new profile data on every login, the profile picture will be retrieved as well.')
 	);
 
 	add_settings_field( 
@@ -164,6 +163,15 @@ class PKLI_Settings {
 		'pkli_general_options_section',
                 array('field_name' => 'li_logged_in_message',
                     'field_description' => 'Enter a message you would like to show for logged in users in place of the login button. If left blank, the button is hidden and no message is shown.')
+	);
+        
+        add_settings_field( 
+		'li_keep_user_logged_in', 
+		__( "Keep user logged in?", 'linkedin-login' ), 
+		array($this, 'select_field_display'),  
+		'pkli_options_page', 
+		'pkli_general_options_section' ,
+                array('field_name' => 'li_keep_user_logged_in')
 	);
 
     }

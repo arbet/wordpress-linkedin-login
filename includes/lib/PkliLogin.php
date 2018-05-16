@@ -153,8 +153,9 @@ Class PkliLogin {
         // Returns the user's WordPress ID after setting proper redirect URL
         $user_id = $this->authenticate_user($xml);
 
+        $remember = $this->li_options['li_keep_user_logged_in'] == 'yes' ? true : false;
         // Signon user by ID
-        wp_set_auth_cookie($user_id);
+        wp_set_auth_cookie($user_id, $remember);
 
         // Set current WP user so that authentication takes immediate effect without waiting for cookie
         wp_set_current_user($user_id);
