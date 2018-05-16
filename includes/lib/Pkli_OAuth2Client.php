@@ -164,7 +164,6 @@ class Pkli_OAuth2Client
 	}
 
 	// -- tokens
-
 	public function tokenInfo($accesstoken)
 	{
 		$params['access_token'] = $this->access_token;
@@ -189,41 +188,47 @@ class Pkli_OAuth2Client
 	}
 
 	// -- utilities
-
 	private function request( $url, $params=false, $type="GET" )
 	{
+                $args = array(
+                    'timeout'   => $this->curl_time_out,
+                    'user-agent' => $this->curl_useragent,
+                    'sslverify' => $this->curl_ssl_verifypeer,
+                    'headers' => $this->curl_header,
+                );
 
-		if( $type == "GET" ){
-			$url = $url . ( strpos( $url, '?' ) ? '&' : '?' ) . http_build_query( $params );
-		}
+                if ($type == "GET") {                
+                    $url = $url . ( strpos($url, '?') ? '&' : '?' ) . http_build_query($params);
+                    $request = wp_remote_get( $url, $args );
+                }
+                
+                if ($type == "POST") {
+                    if($params){
+                        $args['body'] = $params;
+                    }
 
-		$this->http_info = array();
-		$ch = curl_init();
+                    $request = wp_remote_post( $url, $args );                
+                }
+                
+                $response_code = wp_remote_retrieve_response_code( $request );
+                
+                if ( ! is_wp_error( $request ) && 200 == $response_code ) {                
+                    $response = wp_remote_retrieve_body( $request );
 
-		curl_setopt($ch, CURLOPT_URL            , $url );
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER , 1 );
-		curl_setopt($ch, CURLOPT_TIMEOUT        , $this->curl_time_out );
-		curl_setopt($ch, CURLOPT_USERAGENT      , $this->curl_useragent );
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , $this->curl_connect_time_out );
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER , $this->curl_ssl_verifypeer );
-		curl_setopt($ch, CURLOPT_HTTPHEADER     , $this->curl_header );
+                    if( ! $response ){
+                            return new WP_Error( 'http_request_failed', 'Nodata!' );
+                    }
+                }else{                
+                    $response_message = wp_remote_retrieve_response_message( $request );
 
-		if($this->curl_proxy){
-			curl_setopt( $ch, CURLOPT_PROXY        , $this->curl_proxy);
-		}
+                    if ( ! empty( $response_message ) ){
+                        return new WP_Error( $response_code, $response_message );
 
-		if( $type == "POST" ){
-			curl_setopt($ch, CURLOPT_POST, 1); 
-			if($params) curl_setopt( $ch, CURLOPT_POSTFIELDS, $params );
-		}
+                    }else{
+                        return new WP_Error( $response_code, 'Unknown error!' );
 
-		$response = curl_exec($ch);
-		//Hybrid_Logger::debug( "OAuth2Client::request(). dump request info: ", serialize( curl_getinfo($ch) ) );
-		//Hybrid_Logger::debug( "OAuth2Client::request(). dump request result: ", serialize( $response ) );
-		$this->http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		$this->http_info = array_merge($this->http_info, curl_getinfo($ch));
-
-		curl_close ($ch);
+                    }
+                }
 
 		return $response; 
 	}
