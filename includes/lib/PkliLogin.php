@@ -328,22 +328,6 @@ Class PkliLogin {
     public function get_login_link($attributes = false, $content = '') {
         // extract data from array
         extract(shortcode_atts(array('text' => 'Login With LinkedIn', 'img' => PKLI_URL . 'includes/assets/img/linkedin-button.png', 'redirect' => false, 'autoredirect' => false, 'class' => ''), $attributes));
-
-        // Display the logged in message if user is already logged in
-        if (is_user_logged_in()) {
-            if( $autoredirect != false && $redirect != false ){
-                //Use js because 'wp_redirect' doesn't work
-                ?>
-                <script>
-                document.location.href = '<?php echo home_url($redirect); ?>';
-                </script>
-                <?php                
-            }
-            $html = $this->li_options['li_logged_in_message'].'<br/>';
-            $html .= $content != false ? $content : '';
-            
-            return $html;
-        }
         
         if( $redirect != false){
             // Validate URL as absolute
@@ -351,7 +335,28 @@ Class PkliLogin {
                 $redirect = home_url($redirect);
             }
         }
-        
+     
+        // Display the logged in message if user is already logged in
+        if (is_user_logged_in()) {
+            if( $autoredirect != false && $redirect != false ){
+                //Use js because 'wp_redirect' doesn't work
+                ?>
+                <script>
+                document.location.href = '<?php echo $redirect; ?>';
+                </script>
+                <?php                
+            }
+            //Show content only if user is already logged in via LinkedIn 
+            if(get_user_meta(wp_get_current_user()->ID, 'pkli_linkedin_id') != false){
+                $html = $this->li_options['li_logged_in_message'].'<br/>';
+                $html .= $content != false ? $content : '';
+
+                return $html;    
+            }else{
+                return;
+            }
+        }
+
         $auth_url = $this->get_auth_url($redirect);
 
         // User has specified an image
