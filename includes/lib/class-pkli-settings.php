@@ -125,7 +125,7 @@ class PKLI_Settings {
 		'pkli_options_page', 
 		'pkli_general_options_section',
                 array('field_name' => 'li_list_scopes',
-                    'field_description' => 'The list of LinkedIn scopes.',
+                    'field_description' => 'Select the additional LinkedIn Scopes you need. This option should be only used by developers who need to extend the plugin.',
                     'args' => array(
                         'values' => array(
                             Pkli_Scopes::READ_BASIC_PROFILE => 'Basic profile',
