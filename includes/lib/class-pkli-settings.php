@@ -73,7 +73,7 @@ class PKLI_Settings {
 		'pkli_options_page', 
 		'pkli_general_options_section',
                 array('field_name' => 'li_api_key',
-                        'field_description' => 'Retrieved from <a href="https://www.linkedin.com/secure/developer">LinkedIn Developer Portal</a>. Follow the previous link, create an application and paste the key here',
+                        'field_description' => 'Retrieved from <a href="https://www.linkedin.com/secure/developer" target="_blank">LinkedIn Developer Portal</a>. Follow the previous link, create an application and paste the key here',
                     'field_help' => 'help text goes here')
 	);
 
