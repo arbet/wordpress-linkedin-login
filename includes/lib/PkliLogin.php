@@ -86,10 +86,13 @@ Class PkliLogin {
 
     // Returns LinkedIn authorization URL
     public function get_auth_url($redirect = false) {
-
+        
         $state = wp_generate_password(12, false);
+        
         //'r_basicprofile' and 'r_emailaddress' are default values
-        $this->li_options['li_list_scopes'] = !empty($this->li_options['li_list_scopes']) ? implode(' ', $this->li_options['li_list_scopes']) : 'r_basicprofile r_emailaddress';
+        require_once (PKLI_PATH.'/includes/lib/class-pkli-scopes.php');
+        $def_scopes = array(Pkli_Scopes::READ_BASIC_PROFILE, Pkli_Scopes::READ_EMAIL_ADDRESS);
+        $this->li_options['li_list_scopes'] = !empty($this->li_options['li_list_scopes']) ? implode(' ', array_unique(array_merge($this->li_options['li_list_scopes'], $def_scopes))) : implode(' ', $def_scopes);
 
         $authorize_url = $this->oauth->authorizeUrl(array('scope' => $this->li_options['li_list_scopes'],
             'state' => $state));
