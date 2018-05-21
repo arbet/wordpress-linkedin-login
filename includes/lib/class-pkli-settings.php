@@ -1,7 +1,7 @@
 <?php
 /*
  * This classes handles the plugin's options page
- * @author Samer Bechara <sam@thoughtengineer.com>
+ * @author The Thought Engineer <sam@thoughtengineer.com>
  */
 
 class PKLI_Settings {

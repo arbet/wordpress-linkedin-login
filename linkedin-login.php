@@ -4,7 +4,7 @@
  * Plugin URI: http://thoughtengineer.com/wordpress-linkedin-login-plugin
  * Description: Enables login with LinkedIn functionality for your website
  * Version: 1.0
- * Author: Samer Bechara
+ * Author: The Thought Engineer
  * Author URI: http://thoughtengineer.com/
  * Text Domain: linkedin-login
  * Domain Path: /languages 
