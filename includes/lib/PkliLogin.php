@@ -92,7 +92,7 @@ Class PkliLogin {
         //'r_basicprofile' and 'r_emailaddress' are default values
         require_once (PKLI_PATH.'/includes/lib/class-pkli-scopes.php');
         $def_scopes = array(Pkli_Scopes::READ_BASIC_PROFILE, Pkli_Scopes::READ_EMAIL_ADDRESS);
-        $this->li_options['li_list_scopes'] = !empty($this->li_options['li_list_scopes']) ? implode(' ', array_unique(array_merge($this->li_options['li_list_scopes'], $def_scopes))) : implode(' ', $def_scopes);
+        $this->li_options['li_list_scopes'] = (isset($this->li_options['li_list_scopes']) && is_array($this->li_options['li_list_scopes'])) ? implode(' ', array_unique(array_merge($this->li_options['li_list_scopes'], $def_scopes))) : implode(' ', $def_scopes);
 
         $authorize_url = $this->oauth->authorizeUrl(array('scope' => $this->li_options['li_list_scopes'],
             'state' => $state));
