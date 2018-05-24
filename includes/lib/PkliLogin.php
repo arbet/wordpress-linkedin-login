@@ -49,14 +49,15 @@ Class PkliLogin {
 
         // This action processes any LinkedIn Login requests
         add_action('init', array($this, 'process_login'));
-
-        // Set LinkedIn keys class variables - These will be used throughout the class
-        $li_keys = get_option('pkli_basic_options');
-        $this->li_api_key = $li_keys['li_api_key'];
-        $this->li_secret_key = $li_keys['li_secret_key'];
-
+        
+        add_action( 'admin_enqueue_scripts', array($this, 'admin_enqueue') );
+        
         // Get plugin options
         $this->li_options = get_option('pkli_basic_options');
+
+        // Set LinkedIn keys class variables - These will be used throughout the class
+        $this->li_api_key = !empty($this->li_options['li_api_key']) ? $this->li_options['li_api_key'] : '';
+        $this->li_secret_key = !empty($this->li_options['li_secret_key']) ? $this->li_options['li_secret_key'] : '';
 
         // Require OAuth2 client to process authentications
         require_once(PKLI_PATH . '/includes/lib/Pkli_OAuth2Client.php');
@@ -117,6 +118,11 @@ Class PkliLogin {
                                             <img alt='LinkedIn' src='" . PKLI_URL . "includes/assets/img/linkedin-button.png' />
         </a></p>";
 
+    }
+    
+    //Enqueue styles and scripts
+    function admin_enqueue(){
+        wp_enqueue_style( 'li-admin-css', PKLI_URL . 'includes/assets/css/admin.css' );
     }
 
     // Logs in a user after he has authorized his LinkedIn account
@@ -331,7 +337,7 @@ Class PkliLogin {
     public function get_login_link($attributes = false, $content = '') {
         // extract data from array
         extract(shortcode_atts(array('text' => 'Login With LinkedIn', 'img' => PKLI_URL . 'includes/assets/img/linkedin-button.png', 'redirect' => false, 'autoredirect' => false, 'class' => ''), $attributes));
-     
+
         if( $redirect != false){
             // Validate URL as absolute
             if( ! filter_var($redirect, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED) ){
@@ -434,26 +440,28 @@ Class PkliLogin {
             * positions -> Position (! This field is a textarea)    
             * picture-url -> The Image for User (This type field is textbox)
             */
+            
+            $arr_buddypress_fields = isset($this->li_options['li_buddypress_fields']) && is_array($this->li_options['li_buddypress_fields']) ? $this->li_options['li_buddypress_fields'] : array();
             $arr_fields = array();
-            if( $first_name != false ){
-                $arr_fields['First Name'] = $first_name;
+            if( $first_name != false && isset($arr_buddypress_fields['first-name'])){
+                $arr_fields[$arr_buddypress_fields['first-name']] = $first_name;
             }
-            if( $last_name != false ){
-                $arr_fields['Last Name'] = $last_name;
+            if( $last_name != false && isset($arr_buddypress_fields['last-name'])){
+                $arr_fields[$arr_buddypress_fields['last-name']] = $last_name;
             }
-            if( $headline != false ){
-                $arr_fields['Description'] = $headline;
+            if( $headline != false && isset($arr_buddypress_fields['headline']) ){
+                $arr_fields[$arr_buddypress_fields['headline']] = $headline;
             }
-            if( !empty($user_positions) ){
-                $arr_fields['Position'] = '';
+            if( !empty($user_positions) && isset($arr_buddypress_fields['positions']) ){
+                $arr_fields[$arr_buddypress_fields['positions']] = '';
                 foreach ($user_positions as $key => $value) {
-                    $arr_fields['Position'] .= $value['title'].'<br/>';
+                    $arr_fields[$arr_buddypress_fields['positions']] .= $value['title'].'<br/>';
                 }            
             }
-            if( $picture_url != false ){
-                $arr_fields['The Image for User'] = $picture_url;
+            if( $picture_url != false && isset($arr_buddypress_fields['picture-url']) ){
+                $arr_fields[$arr_buddypress_fields['picture-url']] = $picture_url;
             }
-            
+           
             if(empty($arr_fields)){
                 return $result;
             }
@@ -464,11 +472,11 @@ Class PkliLogin {
             $table_prof_data = $wpdb->prefix.'bp_xprofile_data';
 
             foreach ($arr_fields as $field_type => $field_value) {
-                    $sql = "SELECT prof_data.id FROM `{$table_prof_fields}` AS prof_fields INNER JOIN `{$table_prof_data}` AS prof_data ON prof_fields.id = prof_data.field_id WHERE prof_fields.name = '{$field_type}' AND prof_data.user_id = ".$user_id;
+                    $sql = "SELECT prof_data.id FROM `{$table_prof_fields}` AS prof_fields INNER JOIN `{$table_prof_data}` AS prof_data ON prof_fields.id = prof_data.field_id WHERE prof_fields.id = {$field_type} AND prof_data.user_id = ".$user_id;
                     $id = $wpdb->get_var( $sql );
 
                     if( is_null($id) ){
-                            $sql = "SELECT id FROM `{$table_prof_fields}` WHERE name = '{$field_type}'";
+                            $sql = "SELECT id FROM `{$table_prof_fields}` WHERE id = ".$field_type;
                             $field_id = $wpdb->get_var( $sql );
                             if( !is_null($field_id) ){
                                     $wpdb->insert(

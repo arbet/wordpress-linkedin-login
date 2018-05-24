@@ -176,6 +176,24 @@ class PKLI_Settings {
 		'pkli_general_options_section' ,
                 array('field_name' => 'li_keep_user_logged_in')
 	);
+        
+        //Is BuddyPress active?
+        if (class_exists('BuddyPress')) {            
+            global $wpdb;
+            
+            $table_prof_fields = $wpdb->prefix.'bp_xprofile_fields';
+            $sql = "SELECT id, name FROM `{$table_prof_fields}` WHERE 1";
+            $arr_names = $wpdb->get_results( $sql );
+ 
+            add_settings_field(
+                    'pkli_buddypress_options_section', 
+                    __( 'Match fields', 'linkedin-login' ), 
+                    array($this, 'buddypress_fields_match'),  
+                    'pkli_options_page', 
+                    'pkli_general_options_section' ,
+                    array('field_name' => 'li_buddypress_fields', 'args' => $arr_names)
+            );
+        }
 
     }
 
@@ -258,6 +276,46 @@ class PKLI_Settings {
         <p class="description"><?php echo isset($field_options['field_description']) ? $field_options['field_description'] : ''; ?></p>
         <?php
     }
+    
+    /*
+     * Fields for BuddyPress
+     */
+    function buddypress_fields_match($field_options){
+        $field_name = $field_options['field_name'];
+        $args = $field_options['args'];
+
+        $stored_values = $this->get_field_value($field_name);
+        $stored_values = is_array($stored_values) ? $stored_values : array();
+        
+        $ln_fields = array('first-name','last-name','headline','positions','picture-url');
+        ?>
+        <table class='buddypress_table'>
+            <tr><th><?php _e( 'Linikedin', 'linkedin-login' );?></th><th><?php _e( 'Buddypress', 'linkedin-login' );?></th></tr>
+            <?php
+                foreach ($ln_fields as $ln_key => $ln_value) {
+                    echo '<tr><td>'.$ln_value.'</td><td>'. $this->buddypress_list_fields($args, $field_name, $ln_value, $stored_values) .'</td></tr>';
+                }
+            ?>
+        </table>
+    <?php 
+    }
+    
+    //Get list of buddypress fields
+    private function buddypress_list_fields($args, $field_name, $field_key, $stored_values){
+        if( empty($args) ){
+            return '';
+        }
+        $html = '<select name="pkli_basic_options['. $field_name .']['. $field_key .']">';
+        if( !empty($args) ){
+            foreach ($args as $key => $value) {
+                $selected = (isset($stored_values[$field_key]) && $stored_values[$field_key] == $value->id) ? 'selected' : '';
+                $html .= '<option value="'. $value->id .'" '. $selected .'>'. $value->name .'</option>';
+            }
+        }
+        $html .= '</select>';
+        return $html;
+    }
+    
     /*
      * Rendered at the start of the options section
      */
