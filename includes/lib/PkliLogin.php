@@ -65,7 +65,7 @@ Class PkliLogin {
         $this->oauth = new Pkli_OAuth2Client($this->li_api_key, $this->li_secret_key);
 
         // Set Oauth URLs
-        $this->oauth->redirect_uri = wp_login_url() . '?action=pkli_login';
+        $this->oauth->redirect_uri = home_url('/?action=pkli_login');
         $this->oauth->authorize_url = self::_AUTHORIZE_URL;
         $this->oauth->token_url = self::_TOKEN_URL;
         $this->oauth->api_base_url = self::_BASE_URL;
@@ -171,7 +171,7 @@ Class PkliLogin {
 
         // Validate URL as absolute
         if (filter_var($this->user_redirect, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED)) {
-            wp_safe_redirect($this->user_redirect);
+            wp_redirect($this->user_redirect); exit;
         }
 
         // Invalid redirect URL, we'll redirect to admin URL
@@ -331,7 +331,7 @@ Class PkliLogin {
     public function get_login_link($attributes = false, $content = '') {
         // extract data from array
         extract(shortcode_atts(array('text' => 'Login With LinkedIn', 'img' => PKLI_URL . 'includes/assets/img/linkedin-button.png', 'redirect' => false, 'autoredirect' => false, 'class' => ''), $attributes));
-        
+     
         if( $redirect != false){
             // Validate URL as absolute
             if( ! filter_var($redirect, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED) ){
