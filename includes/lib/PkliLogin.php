@@ -196,7 +196,7 @@ Class PkliLogin {
 
         // Get first name, last name and email address, and load 
         // response into XML object
-        $xml = simplexml_load_string($this->oauth->get('https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address,headline,specialties,positions:(id,title,summary,start-date,end-date,is-current,company),summary,site-standard-profile-request,picture-url,location:(name,country:(code)),industry)'));
+        $xml = simplexml_load_string($this->oauth->get('https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address,headline,specialties,positions:(id,title,summary,start-date,end-date,is-current,company),summary,site-standard-profile-request,picture-url,location:(name,country:(code)),industry,public-profile-url)'));
 
         return $xml;
 
@@ -389,6 +389,7 @@ Class PkliLogin {
         $industry = (string) $xml->{'industry'};
         $headline = (string) $xml->{'headline'};
         $specialties = (string) $xml->{'specialties'};
+        $public_profile_url = (string) $xml->{'public-profile-url'};
 
         // Get total positions
         $total_positions = (int) $xml->positions->attributes()->total;
@@ -418,7 +419,10 @@ Class PkliLogin {
         update_user_meta($user_id, 'pkli_linkedin_id', $linkedin_id);
 
         // Store all profile fields as metadata values
-        update_user_meta($user_id, 'pkli_linkedin_profile', array('first' => $first_name, 'last' => $last_name, 'description' => $description, 'linkedin_url' => $linkedin_url, 'linkedin_id' => $linkedin_id, 'profile_picture' => $picture_url, 'location' => $location, 'industry' => $industry, 'headline' => $headline, 'specialties' => $specialties, 'positions' => $user_positions));
+        update_user_meta($user_id, 'pkli_linkedin_profile', array('first' => $first_name, 'last' => $last_name, 'description' => $description,
+            'linkedin_url' => $linkedin_url, 'linkedin_id' => $linkedin_id, 'profile_picture' => $picture_url,
+            'location' => $location, 'industry' => $industry, 'headline' => $headline, 
+            'specialties' => $specialties, 'positions' => $user_positions, 'public_profile_url' => $public_profile_url));
                 
         //Is BuddyPress active?
         if (class_exists('BuddyPress')) {
