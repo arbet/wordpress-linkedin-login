@@ -12,20 +12,18 @@ class PKLI_Settings {
     /*
      * Class constructor, initializes menu and settings page
      */
-
     public function __construct() {
 
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_init', array($this, 'init_settings'));
 
         $this->options = get_option('pkli_basic_options');
-
+        $this->options_buddypress = get_option('pkli_buddypress_options');
     }
 
     /*
      * Adds an admin menu
      */
-
     public function add_admin_menu() {
         add_options_page('WP LinkedIn Login Options Page', 'LinkedIn Login', 'manage_options', 'linkedin_login_settings', array($this, 'pkli_options_page_display'));
 
@@ -34,96 +32,130 @@ class PKLI_Settings {
     /*
      * Displays the options page
      */
-
     public function pkli_options_page_display() {
+        echo '<h2>'. __( 'LinkedIn Login Plugin Settings', 'linkedin-login' ) .'</h2>';
+
+        $this->pkli_basic_options_section_callback();
+  
+        $active_tab = "general-options";
+
+        if(isset($_GET["tab"]) && $_GET["tab"] == "buddypress-options" && class_exists('BuddyPress')){
+            $active_tab = "buddypress-options";
+        }            
         ?>
+        <h2 class="nav-tab-wrapper">
+                <a href="?page=linkedin_login_settings&tab=general-options" class="nav-tab <?php if($active_tab == 'general-options'){echo 'nav-tab-active';} ?> "><?php _e('General', 'linkedin-login'); ?></a>
+                <?php if (class_exists('BuddyPress')) { ?>
+                    <a href="?page=linkedin_login_settings&tab=buddypress-options" class="nav-tab <?php if($active_tab == 'buddypress-options'){echo 'nav-tab-active';} ?>"><?php _e('BuddyPress', 'linkedin-login'); ?></a>
+                <?php } ?>
+        </h2>
         <form action='options.php' method='post'>
 
-            <?php
-            settings_fields('pkli_options_page');
-            do_settings_sections('pkli_options_page');
+            <?php           
+            if ($active_tab == 'general-options') {
+                settings_fields('pkli_options_page');
+                do_settings_sections('pkli_options_page');
+                
+            } elseif ($active_tab == 'buddypress-options') {
+                
+                settings_fields('pkli_buddypress_options');
+                do_settings_sections('pkli_options_buddypress_page');
+            }
+            
             submit_button();
             ?>
 
         </form>
         <?php
-
     }
 
     /*
      * Initializes our settings
      */
+    public function init_settings() {        
+        register_setting( 'pkli_buddypress_options', 'pkli_buddypress_options' );
 
-    public function init_settings() {
-        require_once (PKLI_PATH.'/includes/lib/class-pkli-scopes.php');
+        add_settings_section( 'pkli_buddypress_options_section', '', '', 'pkli_options_buddypress_page' );
 
-	register_setting( 'pkli_options_page', 'pkli_basic_options' );
+        global $wpdb;
 
-	add_settings_section(
-		'pkli_general_options_section', 
-		__( 'LinkedIn Login Plugin Settings', 'linkedin-login' ), 
-		array($this, 'pkli_basic_options_section_callback'), 
-		'pkli_options_page'
-	);
+        $table_prof_fields = $wpdb->prefix.'bp_xprofile_fields';
+        $sql = "SELECT id, name FROM `{$table_prof_fields}` WHERE 1";
+        $arr_names = $wpdb->get_results( $sql );
 
-	add_settings_field( 
-		'li_api_key', 
-		__( 'Your LinkedIn API Key', 'linkedin-login' ), 
-		array($this, 'text_field_display'), 
-		'pkli_options_page', 
-		'pkli_general_options_section',
+        add_settings_field(
+                'pkli_buddypress_options_section', 
+                __( 'Match fields', 'linkedin-login' ), 
+                array($this, 'buddypress_fields_match'),  
+                'pkli_options_buddypress_page', 
+                'pkli_buddypress_options_section' ,
+                array('field_name' => 'li_buddypress_fields', 'args' => $arr_names)
+        );
+
+        register_setting( 'pkli_options_page', 'pkli_basic_options' );
+
+        add_settings_section( 'pkli_general_options_section', '', '', 'pkli_options_page' );
+
+        add_settings_field( 
+                'li_api_key', 
+                __( 'Your LinkedIn API Key', 'linkedin-login' ), 
+                array($this, 'text_field_display'), 
+                'pkli_options_page', 
+                'pkli_general_options_section',
                 array('field_name' => 'li_api_key',
                         'field_description' => 'Retrieved from <a href="https://www.linkedin.com/secure/developer" target="_blank">LinkedIn Developer Portal</a>. Follow the previous link, create an application and paste the key here',
                     'field_help' => 'help text goes here')
-	);
+        );
 
-	add_settings_field( 
-		'li_secret_key', 
-		__( 'Your LinkedIn API Secret', 'linkedin-login' ), 
-		array($this, 'text_field_display'), 
-		'pkli_options_page', 
-		'pkli_general_options_section' ,
+        add_settings_field( 
+                'li_secret_key', 
+                __( 'Your LinkedIn API Secret', 'linkedin-login' ), 
+                array($this, 'text_field_display'), 
+                'pkli_options_page', 
+                'pkli_general_options_section' ,
                  array('field_name' => 'li_secret_key',
                      'field_description' => 'This is another key that can be found when you create the application following the previous link as well. Paste it here.')
-	);
+        );
 
-	add_settings_field( 
-		'li_redirect_url', 
-		__( 'Login Redirect URL', 'linkedin-login' ), 
-		array($this, 'text_field_display'),
-		'pkli_options_page', 
-		'pkli_general_options_section' ,
+        add_settings_field( 
+                'li_redirect_url', 
+                __( 'Login Redirect URL', 'linkedin-login' ), 
+                array($this, 'text_field_display'),
+                'pkli_options_page', 
+                'pkli_general_options_section' ,
                 array('field_name' => 'li_redirect_url',
                     'field_description' => 'The absolute URL to redirect users to after login. If left blank or points to external host, will redirect to the dashboard page.')
 
-	);
+        );
 
-	add_settings_field( 
-		'li_registration_redirect_url', 
-		__( 'Sign-Up Redirect URL', 'linkedin-login' ), 
-		array($this, 'text_field_display'), 
-		'pkli_options_page', 
-		'pkli_general_options_section',
+        add_settings_field( 
+                'li_registration_redirect_url', 
+                __( 'Sign-Up Redirect URL', 'linkedin-login' ), 
+                array($this, 'text_field_display'), 
+                'pkli_options_page', 
+                'pkli_general_options_section',
                 array('field_name' => 'li_registration_redirect_url',
                     'field_description' => 'Users are redirected to this URL when they register via their LinkedIn account. This is useful if you want to show them a one-time welcome message after registration. If left blank or points to external host, will redirect to the dashboard page.')
-	);
+        );
 
-	add_settings_field( 
-		'li_cancel_redirect_url', 
-		__( 'Cancel Redirect URL', 'linkedin-login' ), 
-		array($this, 'text_field_display'),  
-		'pkli_options_page', 
-		'pkli_general_options_section',
+        add_settings_field( 
+                'li_cancel_redirect_url', 
+                __( 'Cancel Redirect URL', 'linkedin-login' ), 
+                array($this, 'text_field_display'),  
+                'pkli_options_page', 
+                'pkli_general_options_section',
                 array('field_name' => 'li_cancel_redirect_url',
                     'field_description' => 'Users are redirected to this URL when they click Cancel on the LinkedIn Authentication page. This is useful if you want to show them a different option if for some reason they do not want to login with their LinkedIn account. If left blank or points to external host, will redirect back to default WordPress login page.')
-	);
-        
+        );
+
+        require_once (PKLI_PATH.'/includes/lib/class-pkli-scopes.php');
+
         add_settings_field( 
-		'li_list_scopes', 
-		__( 'Scopes', 'linkedin-login' ), 
-		array($this, 'checkbox_field_display'),  
-		'pkli_options_page', 
-		'pkli_general_options_section',
+                'li_list_scopes', 
+                __( 'Scopes', 'linkedin-login' ), 
+                array($this, 'checkbox_field_display'),  
+                'pkli_options_page', 
+                'pkli_general_options_section',
                 array('field_name' => 'li_list_scopes',
                     'field_description' => 'Select the additional LinkedIn Scopes you need. This option should be only used by developers who need to extend the plugin.',
                     'args' => array(
@@ -136,72 +168,52 @@ class PKLI_Settings {
                         'other' => array('disabled' => array(Pkli_Scopes::READ_BASIC_PROFILE, Pkli_Scopes::READ_EMAIL_ADDRESS))
                     )
                 )
-	);
+        );
 
-	add_settings_field( 
-		'li_auto_profile_update', 
-		__( 'Retrieve LinkedIn profile data everytime?', 'linkedin-login' ), 
-		array($this, 'select_field_display'),  
-		'pkli_options_page', 
-		'pkli_general_options_section' ,
+        add_settings_field( 
+                'li_auto_profile_update', 
+                __( 'Retrieve LinkedIn profile data everytime?', 'linkedin-login' ), 
+                array($this, 'select_field_display'),  
+                'pkli_options_page', 
+                'pkli_general_options_section' ,
                 array('field_name' => 'li_auto_profile_update',
                     'field_description' => 'This option allows you to pull in the users data the first time, upon registration but not overwrite all of their information every time they login with the linkedin button. This is useful if users spend time creating a custom profile and then they later use the login with linkedin button. Disable this if you do not want their information to be overwritten')                
-	);
+        );
 
-	add_settings_field( 
-		'li_override_profile_photo', 
-		__( "Override the user's profile picture?", 'linkedin-login' ), 
-		array($this, 'select_field_display'),  
-		'pkli_options_page', 
-		'pkli_general_options_section' ,
+        add_settings_field( 
+                'li_override_profile_photo', 
+                __( "Override the user's profile picture?", 'linkedin-login' ), 
+                array($this, 'select_field_display'),  
+                'pkli_options_page', 
+                'pkli_general_options_section' ,
                 array('field_name' => 'li_override_profile_photo',
                     'field_description' => 'When enabled, this option fetches the user\'s profile picture from LinkedIn and overrides the default gravatar.com user profile picture used by WordPress. If the plugin is setup to retrive new profile data on every login, the profile picture will be retrieved as well.')
-	);
+        );
 
-	add_settings_field( 
-		'li_logged_in_message', 
-		__( 'Logged In Message', 'linkedin-login' ), 
-		array($this, 'text_area_display'), 
-		'pkli_options_page', 
-		'pkli_general_options_section',
+        add_settings_field( 
+                'li_logged_in_message', 
+                __( 'Logged In Message', 'linkedin-login' ), 
+                array($this, 'text_area_display'), 
+                'pkli_options_page', 
+                'pkli_general_options_section',
                 array('field_name' => 'li_logged_in_message',
                     'field_description' => 'Enter a message you would like to show for logged in users in place of the login button. If left blank, the button is hidden and no message is shown.')
-	);
-        
-        add_settings_field( 
-		'li_keep_user_logged_in', 
-		__( "Keep user logged in?", 'linkedin-login' ), 
-		array($this, 'select_field_display'),  
-		'pkli_options_page', 
-		'pkli_general_options_section' ,
-                array('field_name' => 'li_keep_user_logged_in')
-	);
-        
-        //Is BuddyPress active?
-        if (class_exists('BuddyPress')) {            
-            global $wpdb;
-            
-            $table_prof_fields = $wpdb->prefix.'bp_xprofile_fields';
-            $sql = "SELECT id, name FROM `{$table_prof_fields}` WHERE 1";
-            $arr_names = $wpdb->get_results( $sql );
- 
-            add_settings_field(
-                    'pkli_buddypress_options_section', 
-                    __( 'Match fields', 'linkedin-login' ), 
-                    array($this, 'buddypress_fields_match'),  
-                    'pkli_options_page', 
-                    'pkli_general_options_section' ,
-                    array('field_name' => 'li_buddypress_fields', 'args' => $arr_names)
-            );
-        }
+        );
 
+        add_settings_field( 
+                'li_keep_user_logged_in', 
+                __( "Keep user logged in?", 'linkedin-login' ), 
+                array($this, 'select_field_display'),  
+                'pkli_options_page', 
+                'pkli_general_options_section' ,
+                array('field_name' => 'li_keep_user_logged_in')
+        );
     }
 
     /*
      * Displays a text field setting, called back by the add_settings_field function
      * @param   array   $field_options  Passed by the add_settings_field callback function
      */
-
     public function text_field_display($field_options) {
 
         // Get the text field name
@@ -216,8 +228,7 @@ class PKLI_Settings {
     /*
      * Displays a text area setting, called back by the add_settings_field function
      * @param   array   $field_options  Passed by the add_settings_field callback function
-     */
- 
+     */ 
     public function text_area_display($field_options) {
 
         $field_name = $field_options['field_name'];
@@ -231,7 +242,6 @@ class PKLI_Settings {
     /*
      * Returns the field's value
      */
-
     private function get_field_value($field_name) {
 
         return isset($this->options[$field_name]) ? $this->options[$field_name] : '';
@@ -284,7 +294,7 @@ class PKLI_Settings {
         $field_name = $field_options['field_name'];
         $args = $field_options['args'];
 
-        $stored_values = $this->get_field_value($field_name);
+        $stored_values = isset($this->options_buddypress[$field_name]) ? $this->options_buddypress[$field_name] : '';
         $stored_values = is_array($stored_values) ? $stored_values : array();
         
         $ln_fields = array('first-name','last-name','headline','positions','picture-url');
@@ -305,7 +315,7 @@ class PKLI_Settings {
         if( empty($args) ){
             return '';
         }
-        $html = '<select name="pkli_basic_options['. $field_name .']['. $field_key .']">';
+        $html = '<select name="pkli_buddypress_options['. $field_name .']['. $field_key .']">';
         if( !empty($args) ){
             foreach ($args as $key => $value) {
                 $selected = (isset($stored_values[$field_key]) && $stored_values[$field_key] == $value->id) ? 'selected' : '';

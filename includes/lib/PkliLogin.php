@@ -440,8 +440,9 @@ Class PkliLogin {
             * positions -> Position (! This field is a textarea)    
             * picture-url -> The Image for User (This type field is textbox)
             */
+            $buddypress_options = get_option('pkli_buddypress_options');
             
-            $arr_buddypress_fields = isset($this->li_options['li_buddypress_fields']) && is_array($this->li_options['li_buddypress_fields']) ? $this->li_options['li_buddypress_fields'] : array();
+            $arr_buddypress_fields = isset($buddypress_options['li_buddypress_fields']) && is_array($buddypress_options['li_buddypress_fields']) ? $buddypress_options['li_buddypress_fields'] : array();
             $arr_fields = array();
             if( $first_name != false && isset($arr_buddypress_fields['first-name'])){
                 $arr_fields[$arr_buddypress_fields['first-name']] = $first_name;
