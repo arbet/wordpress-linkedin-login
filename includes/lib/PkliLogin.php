@@ -66,7 +66,7 @@ Class PkliLogin {
         $this->oauth = new Pkli_OAuth2Client($this->li_api_key, $this->li_secret_key);
 
         // Set Oauth URLs
-        $this->oauth->redirect_uri = home_url('/?action=pkli_login');
+        $this->oauth->redirect_uri = wp_login_url() . '?action=pkli_login';
         $this->oauth->authorize_url = self::_AUTHORIZE_URL;
         $this->oauth->token_url = self::_TOKEN_URL;
         $this->oauth->api_base_url = self::_BASE_URL;
