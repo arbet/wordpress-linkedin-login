@@ -57,9 +57,10 @@ class PKLI_Settings {
                 do_settings_sections('pkli_options_page');
                 
             } elseif ($active_tab == 'buddypress-options') {
-                
+                echo "<div class='tab-buddypress-options'>";
                 settings_fields('pkli_buddypress_options');
                 do_settings_sections('pkli_options_buddypress_page');
+                echo "</div>";
             }
             
             submit_button();
@@ -75,17 +76,16 @@ class PKLI_Settings {
     public function init_settings() {        
         register_setting( 'pkli_buddypress_options', 'pkli_buddypress_options' );
 
-        add_settings_section( 'pkli_buddypress_options_section', '', '', 'pkli_options_buddypress_page' );
+        add_settings_section('pkli_buddypress_options_section', 'Map LinkedIn to BuddyPress fields', '', 'pkli_options_buddypress_page' );
 
         global $wpdb;
 
         $table_prof_fields = $wpdb->prefix.'bp_xprofile_fields';
         $sql = "SELECT id, name FROM `{$table_prof_fields}` WHERE 1";
         $arr_names = $wpdb->get_results( $sql );
-
         add_settings_field(
                 'pkli_buddypress_options_section', 
-                __( 'Map LinkedIn to BuddyPress fields<br/>Choose which LinkedIn fields correspond to your BuddyPress custom fields', 'linkedin-login' ), 
+                __( 'Choose which LinkedIn fields correspond to your BuddyPress custom fields', 'linkedin-login' ), 
                 array($this, 'buddypress_fields_match'),  
                 'pkli_options_buddypress_page', 
                 'pkli_buddypress_options_section' ,
