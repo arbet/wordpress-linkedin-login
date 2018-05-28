@@ -18,10 +18,10 @@ List of features:
 * For people who are already registered, the LinkedIn plugin automatically logs them in, by matching the email address associated with their LinkedIn account with the user\'s email address inside WordPress. 
 * Just enter your LinkedIn API Key and Secret Key, under the settings page and you\'re ready to go!
 * User's First Name and Last Name are automatically updated from LinkedIn
-* Use the shortcode [wpli_login_link] to display the sign in link anywhere on your site.
-* You can use [wpli_login_link text='Your Custom Link Text'] to generate a sign-in link with your own text.
-* [wpli_login_link redirect = 'http://example.com/your-redirect-page'] will redirect the user to a certain URL after login
-* [wpli_login_link class = 'class1 class2'] will add the corresponding CSS classes to the generated link
+* Use the shortcode [wpli_locked_content] to display the sign in link anywhere on your site.
+* You can use [wpli_locked_content text='Your Custom Link Text'] to generate a sign-in link with your own text.
+* [wpli_locked_content redirect = 'http://example.com/your-redirect-page'] will redirect the user to a certain URL after login
+* [wpli_locked_content class = 'class1 class2'] will add the corresponding CSS classes to the generated link
 You can find more information here: [LinkedIn Login Plugin](http://thoughtengineer.com/wordpress-linkedin-login-plugin/ "Your WordPress LinkedIn Login Solution").
 
 * If you want to contribute to development, please visit our [Github Repository](https://github.com/arbet/wordpress-linkedin-login/ "Github Repository")
