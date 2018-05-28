@@ -12,7 +12,7 @@ Allows your WordPress website visitors to login using their LinkedIn account.
 == Description ==
 This plugin gives your WordPress website the ability to allow users to login/register via their LinkedIn account. 
 
-List of features:
+List of features: 
 
 * Users can register with their LinkedIn account using one click
 * For people who are already registered, the LinkedIn plugin automatically logs them in, by matching the email address associated with their LinkedIn account with the user\'s email address inside WordPress. 

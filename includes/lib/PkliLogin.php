@@ -75,7 +75,7 @@ Class PkliLogin {
         if (get_current_user_id()) {
             $this->oauth->access_token = get_user_meta(get_current_user_id(), 'pkli_access_token', true);
         }
-        // Add shortcode for getting LinkedIn Login URL
+        // Add shortcode for getting LinkedIn Login URL 
         add_shortcode('wpli_locked_content', array($this, 'get_login_link'));
 
         // Start session
