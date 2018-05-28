@@ -2,12 +2,18 @@
     padding: 0;
 }
 .form-table th[scope="row"]{
-	width: 15%;
-	font-weight: normal;
+    width: 0;
+    padding: 0;
 }
-.tab-buddypress-options h2{
-	margin-bottom: 0;
-    margin-left: 10%;
+.tab-buddypress-options h2,
+.tab-buddypress-options h3{
+    margin: 0;
+    text-align: left;
+}
+.tab-buddypress-options h3{
+    padding-top: 5px;
+	font-size: 1.15em;
+    font-weight: normal;
 }
 .tab-buddypress-options .form-table{
 	margin-top: -5px;

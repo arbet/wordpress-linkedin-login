@@ -76,7 +76,7 @@ class PKLI_Settings {
     public function init_settings() {        
         register_setting( 'pkli_buddypress_options', 'pkli_buddypress_options' );
 
-        add_settings_section('pkli_buddypress_options_section', 'Map LinkedIn to BuddyPress fields', '', 'pkli_options_buddypress_page' );
+        add_settings_section('pkli_buddypress_options_section', '', 'Choose which LinkedIn fields correspond to your BuddyPress custom fields', 'pkli_options_buddypress_page' );
 
         global $wpdb;
 
@@ -85,7 +85,7 @@ class PKLI_Settings {
         $arr_names = $wpdb->get_results( $sql );
         add_settings_field(
                 'pkli_buddypress_options_section', 
-                __( 'Choose which LinkedIn fields correspond to your BuddyPress custom fields', 'linkedin-login' ), 
+                __( '', 'linkedin-login' ), 
                 array($this, 'buddypress_fields_match'),  
                 'pkli_options_buddypress_page', 
                 'pkli_buddypress_options_section' ,
@@ -300,6 +300,10 @@ class PKLI_Settings {
         $ln_fields = array('First Name','Last Name','Headline','Positions','Picture URL');
         ?>
         <table class='buddypress_table'>
+            <caption>
+                <h2>Map LinkedIn to BuddyPress fields</h2>
+                <h3>Choose which LinkedIn fields correspond to your BuddyPress custom fields</h3>
+            </caption>
             <tr><th><?php _e( 'LinkedIn', 'linkedin-login' );?></th><th><?php _e( 'Buddypress', 'linkedin-login' );?></th></tr>
             <?php
                 foreach ($ln_fields as $ln_key => $ln_value) {
