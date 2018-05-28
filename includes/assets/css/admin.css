@@ -1,3 +1,4 @@
 .form-table .buddypress_table td{
     padding: 0;
 }
+.form-table th[scope="row"]{width: 15%;}

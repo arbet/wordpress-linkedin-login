@@ -85,7 +85,7 @@ class PKLI_Settings {
 
         add_settings_field(
                 'pkli_buddypress_options_section', 
-                __( 'Match fields', 'linkedin-login' ), 
+                __( 'Map LinkedIn to BuddyPress fields<br/>Choose which LinkedIn fields correspond to your BuddyPress custom fields', 'linkedin-login' ), 
                 array($this, 'buddypress_fields_match'),  
                 'pkli_options_buddypress_page', 
                 'pkli_buddypress_options_section' ,
@@ -297,10 +297,10 @@ class PKLI_Settings {
         $stored_values = isset($this->options_buddypress[$field_name]) ? $this->options_buddypress[$field_name] : '';
         $stored_values = is_array($stored_values) ? $stored_values : array();
         
-        $ln_fields = array('first-name','last-name','headline','positions','picture-url');
+        $ln_fields = array('First Name','Last Name','Headline','Positions','Picture URL');
         ?>
         <table class='buddypress_table'>
-            <tr><th><?php _e( 'Linikedin', 'linkedin-login' );?></th><th><?php _e( 'Buddypress', 'linkedin-login' );?></th></tr>
+            <tr><th><?php _e( 'LinkedIn', 'linkedin-login' );?></th><th><?php _e( 'Buddypress', 'linkedin-login' );?></th></tr>
             <?php
                 foreach ($ln_fields as $ln_key => $ln_value) {
                     echo '<tr><td>'.$ln_value.'</td><td>'. $this->buddypress_list_fields($args, $field_name, $ln_value, $stored_values) .'</td></tr>';
