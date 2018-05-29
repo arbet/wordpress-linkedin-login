@@ -25,7 +25,7 @@ class PKLI_Settings {
      * Adds an admin menu
      */
     public function add_admin_menu() {
-        add_options_page('WP LinkedIn Login Options Page', 'LinkedIn Login', 'manage_options', 'linkedin_login_settings', array($this, 'pkli_options_page_display'));
+        add_options_page('Ultimate LinkedIn Integration Options Page', 'Ultimate LinkedIn Integration', 'manage_options', 'linkedin_login_settings', array($this, 'pkli_options_page_display'));
 
     }
 
@@ -33,7 +33,7 @@ class PKLI_Settings {
      * Displays the options page
      */
     public function pkli_options_page_display() {
-        echo '<h2>'. __( 'LinkedIn Login Plugin Settings', 'linkedin-login' ) .'</h2>';
+        echo '<h2>'. __( 'Ultimate LinkedIn Integration Plugin Settings', 'linkedin-login' ) .'</h2>';
 
         $this->pkli_basic_options_section_callback();
   

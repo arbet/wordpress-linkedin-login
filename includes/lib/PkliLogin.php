@@ -44,10 +44,10 @@ Class PkliLogin {
 
     public function __construct() {
 
-        // This action displays the LinkedIn Login button on the default WordPress Login Page
+        // This action displays the Ultimate LinkedIn Integration button on the default WordPress Login Page
         add_action('login_form', array($this, 'display_login_button'));
 
-        // This action processes any LinkedIn Login requests
+        // This action processes any Ultimate LinkedIn Integration requests
         add_action('init', array($this, 'process_login'));
         
         add_action( 'admin_enqueue_scripts', array($this, 'admin_enqueue') );
@@ -75,7 +75,7 @@ Class PkliLogin {
         if (get_current_user_id()) {
             $this->oauth->access_token = get_user_meta(get_current_user_id(), 'pkli_access_token', true);
         }
-        // Add shortcode for getting LinkedIn Login URL 
+        // Add shortcode for getting Ultimate LinkedIn Integration URL 
         add_shortcode('wpli_locked_content', array($this, 'get_login_link'));
 
         // Start session
@@ -152,7 +152,7 @@ Class PkliLogin {
         if (isset($_REQUEST['error'])) {
             $error = $_REQUEST['error'];
             $error_description = $_REQUEST['error_description'];
-            error_log("WP_LinkedIn Login Error\nError: $error\nDescription: $error_description");
+            error_log("WP_Ultimate LinkedIn Integration Error\nError: $error\nDescription: $error_description");
         }
 
 

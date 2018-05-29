@@ -9,10 +9,10 @@ Stable tag: 1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-One click LinkedIn Login/Registration, Buddy Press Integration, profile syncing, and more...
+One click Ultimate LinkedIn Integration/Registration, Buddy Press Integration, profile syncing, and more...
 
 == Description ==
-Ultimate LinkedIn Integration (Previously LinkedIn Login) is the most advanced integration between LinkedIn and WordPress. This plugin gives your WordPress website the ability to integrate with LinkedIn\'s API in a way that isn\'t possible with other plugins. 
+Ultimate LinkedIn Integration (Previously Ultimate LinkedIn Integration) is the most advanced integration between LinkedIn and WordPress. This plugin gives your WordPress website the ability to integrate with LinkedIn\'s API in a way that isn\'t possible with other plugins. 
 
 List of major features:
 
