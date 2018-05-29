@@ -1,49 +1,48 @@
-=== LinkedIn Login ===
+=== Ultimate LinkedIn Integration ===
 Contributors: arbet01
 Tags: linkedin, linkedin-api, social-login
+Donate link: https://paypal.me/SamerBechara
 Requires at least: 3.0.1
-Tested up to: 4.8.2
+Tested up to: 4.9.6
+Requires PHP: 5.x
 Stable tag: 1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Allows your WordPress website visitors to login using their LinkedIn account.  
+One click LinkedIn Login/Registration, Buddy Press Integration, profile syncing, and more...
 
 == Description ==
-This plugin gives your WordPress website the ability to allow users to login/register via their LinkedIn account. 
+Ultimate LinkedIn Integration (Previously LinkedIn Login) is the most advanced integration between LinkedIn and WordPress. This plugin gives your WordPress website the ability to integrate with LinkedIn\'s API in a way that isn\'t possible with other plugins. 
 
-List of features: 
+List of major features:
 
-* Users can register with their LinkedIn account using one click
-* For people who are already registered, the LinkedIn plugin automatically logs them in, by matching the email address associated with their LinkedIn account with the user\'s email address inside WordPress. 
-* Just enter your LinkedIn API Key and Secret Key, under the settings page and you\'re ready to go!
-* User's First Name and Last Name are automatically updated from LinkedIn
-* Use the shortcode [wpli_locked_content] to display the sign in link anywhere on your site.
-* You can use [wpli_locked_content text='Your Custom Link Text'] to generate a sign-in link with your own text.
-* [wpli_locked_content redirect = 'http://example.com/your-redirect-page'] will redirect the user to a certain URL after login
-* [wpli_locked_content class = 'class1 class2'] will add the corresponding CSS classes to the generated link
-You can find more information here: [LinkedIn Login Plugin](http://thoughtengineer.com/wordpress-linkedin-login-plugin/ "Your WordPress LinkedIn Login Solution").
+    - Map BuddyPress custom fields to LinkedIn profile fields
+    - Allow users to register/login with their LinkedIn account using one click
+    - Lock content and make it available to users who have logged in using LinkedIn only. Users who have logged in via other methods won\'t be able to see it. 
+    - Custom redirect URLs upon Sign-up, Login and Authorization Cancellation
+    - Ability to request custom scopes upon authentication (Basic profile and email address are asked for by default, Sharing and Company Admin scopes are optional)
+    - Ability to sync user data the first time user signs up, or everytime they login.
+    - Option to override the user\'s profile picture with LinkedIn\'s profile picture
+    - Ability to keep the user logged in, or require them to login every time.    
 
-* If you want to contribute to development, please visit our [Github Repository](https://github.com/arbet/wordpress-linkedin-login/ "Github Repository")
+    - Docmentation and ShortCodes: [WordPress LinkedIn Documentation](http://thoughtengineer.com/wordpress-linkedin-login-plugin/)
 
-* For Custom LinkedIn-API Development Services, please check my [LinkedIn API developer](http://thoughtengineer.com/linkedin-api-developer/ "LinkedIn API Developer") profile
+    - Request features via our [Github Issue Tracker](https://github.com/arbet/wordpress-linkedin-login/issues)
+
+    - For Custom Development Services, get in touch through our [website](http://thoughtengineer.com/)
+
 
 == Installation ==
-1. Upload \"linkedin-login\" to the \"/wp-content/plugins/\" directory.
-1. Activate the plugin through the \"Plugins\" menu in WordPress.
-1. Enter your API Keys under Settings->LinkedIn Login
-
-== Frequently Asked Questions ==
-= Where do I find my LinkedIn API Key and Secret Key? =
-1. Go to https://www.linkedin.com/secure/developer and create a new application.
-1. Fill out any required fields such as the application name and description.
-1. Put your website domain in the Integration URL field. This should match with the current hostname localhost.
-1. Set \"OAuth 2.0 Redirect URLs:\" to http://example.com/wp-login.php (Replace this with your login page address)
-1. After creating the application, you will be able to see your API key and secret. Copy and paste them into your plugin. 
+Install like any other plugin, and go to plugin settings page for configuration
 
 == Changelog ==
+= 1.0.1=
+ * Minor fixes
 
 = 1.0=
+ * Added BuddyPress Integration
+ * Added Custom Scopes
+ * Added Content Locking Feature
 
 = 0.9.0= 
  * Removed Freemius Integration
@@ -108,12 +107,12 @@ You can find more information here: [LinkedIn Login Plugin](http://thoughtengine
 * FIXED: Custom hook was improperly being triggered on any page load, not just upon login
 
 = 0.4.1 =
-* FIXED: LinkedIn's latest access token wasn't being stored in the db
+* FIXED: LinkedIn\'s latest access token wasn\'t being stored in the db
 
 = 0.4 = 
 * Added action pkli_linkedin_authenticated to allow developers to immediately hook after plugin has authenticated.
-* Plugin now stores user's profile summary on profile description
-* LinkedIn profile URL now retrieved as user's URL
+* Plugin now stores user\'s profile summary on profile description
+* LinkedIn profile URL now retrieved as user\'s URL
 
 = 0.3.2 = 
 
