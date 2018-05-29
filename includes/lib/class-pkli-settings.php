@@ -206,7 +206,8 @@ class PKLI_Settings {
                 array($this, 'select_field_display'),  
                 'pkli_options_page', 
                 'pkli_general_options_section' ,
-                array('field_name' => 'li_keep_user_logged_in')
+                array('field_name' => 'li_keep_user_logged_in',
+                    'field_description' => 'Should the user login every time, or should we remember their details after they login via LinkedIn?')
         );
     }
 
