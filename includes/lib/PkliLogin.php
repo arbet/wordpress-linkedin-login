@@ -429,7 +429,7 @@ Class PkliLogin {
             'linkedin_url' => $linkedin_url, 'linkedin_id' => $linkedin_id, 'profile_picture' => $picture_url,
             'location' => $location, 'industry' => $industry, 'headline' => $headline, 
             'specialties' => $specialties, 'positions' => $user_positions, 'public_profile_url' => $public_profile_url));
-                
+               
         //Is BuddyPress active?
         if (class_exists('BuddyPress')) {
             /*
@@ -441,32 +441,34 @@ Class PkliLogin {
             * picture-url -> The Image for User (This type field is textbox)
             */
             $buddypress_options = get_option('pkli_buddypress_options');
-            
-            $arr_buddypress_fields = isset($buddypress_options['li_buddypress_fields']) && is_array($buddypress_options['li_buddypress_fields']) ? $buddypress_options['li_buddypress_fields'] : array();
+          
+            $arr_bp_fields = isset($buddypress_options['li_buddypress_fields']) && is_array($buddypress_options['li_buddypress_fields']) ? $buddypress_options['li_buddypress_fields'] : array();
+            $arr_bp_fields_not_map = isset($buddypress_options['li_buddypress_fields_not_map']) && is_array($buddypress_options['li_buddypress_fields_not_map']) ? array_keys($buddypress_options['li_buddypress_fields_not_map']) : array();
             $arr_fields = array();
-            if( $first_name != false && isset($arr_buddypress_fields['first-name'])){
-                $arr_fields[$arr_buddypress_fields['first-name']] = $first_name;
+             
+            if( $first_name != false && isset($arr_bp_fields['first-name']) && !in_array('first-name', $arr_bp_fields_not_map) ){
+                $arr_fields[$arr_bp_fields['first-name']] = $first_name;
             }
-            if( $last_name != false && isset($arr_buddypress_fields['last-name'])){
-                $arr_fields[$arr_buddypress_fields['last-name']] = $last_name;
+            if( $last_name != false && isset($arr_bp_fields['last-name']) && !in_array('last-name', $arr_bp_fields_not_map) ){
+                $arr_fields[$arr_bp_fields['last-name']] = $last_name;
             }
-            if( $headline != false && isset($arr_buddypress_fields['headline']) ){
-                $arr_fields[$arr_buddypress_fields['headline']] = $headline;
+            if( $headline != false && isset($arr_bp_fields['headline'])  && !in_array('headline', $arr_bp_fields_not_map) ){
+                $arr_fields[$arr_bp_fields['headline']] = $headline;
             }
-            if( !empty($user_positions) && isset($arr_buddypress_fields['positions']) ){
-                $arr_fields[$arr_buddypress_fields['positions']] = '';
+            if( !empty($user_positions) && isset($arr_bp_fields['positions'])  && !in_array('positions', $arr_bp_fields_not_map) ){
+                $arr_fields[$arr_bp_fields['positions']] = '';
                 foreach ($user_positions as $key => $value) {
-                    $arr_fields[$arr_buddypress_fields['positions']] .= $value['title'].'<br/>';
+                    $arr_fields[$arr_bp_fields['positions']] .= $value['title'].'<br/>';
                 }            
             }
-            if( $picture_url != false && isset($arr_buddypress_fields['picture-url']) ){
-                $arr_fields[$arr_buddypress_fields['picture-url']] = $picture_url;
+            if( $picture_url != false && isset($arr_bp_fields['picture-url'])  && !in_array('picture-url', $arr_bp_fields_not_map) ){
+                $arr_fields[$arr_bp_fields['picture-url']] = $picture_url;
             }
            
             if(empty($arr_fields)){
                 return $result;
             }
-            
+         
             global $wpdb;
             
             $table_prof_fields = $wpdb->prefix.'bp_xprofile_fields';

@@ -297,18 +297,27 @@ class PKLI_Settings {
 
         $stored_values = isset($this->options_buddypress[$field_name]) ? $this->options_buddypress[$field_name] : '';
         $stored_values = is_array($stored_values) ? $stored_values : array();
-        
-        $ln_fields = array('First Name','Last Name','Headline','Positions','Picture URL');
+        $stored_values_not_map = isset($this->options_buddypress[$field_name.'_not_map']) ? $this->options_buddypress[$field_name.'_not_map'] : '';
+        $stored_values_not_map = is_array($stored_values_not_map) ? $stored_values_not_map : array();
+
+        $ln_fields = array(
+            'first-name'    =>'First Name',
+            'last-name'     =>'Last Name',
+            'headline'      =>'Headline',
+            'positions'     =>'Positions',
+            'picture-url'   =>'Picture URL'
+        );
         ?>
         <table class='buddypress_table'>
             <caption>
-                <h2>Map LinkedIn to BuddyPress fields</h2>
-                <h3>Choose which LinkedIn fields correspond to your BuddyPress custom fields</h3>
+                <h2><?php _e( 'Map LinkedIn to BuddyPress fields', 'linkedin-login' );?></h2>
+                <h3><?php _e( 'Choose which LinkedIn fields correspond to your BuddyPress custom fields', 'linkedin-login' );?></h3>
             </caption>
-            <tr><th><?php _e( 'LinkedIn', 'linkedin-login' );?></th><th><?php _e( 'Buddypress', 'linkedin-login' );?></th></tr>
+            <tr><th><?php _e( 'LinkedIn', 'linkedin-login' );?></th><th><?php _e( 'Buddypress', 'linkedin-login' );?></th><th><?php _e( 'Do Not Map', 'linkedin-login' );?></th></tr>
             <?php
                 foreach ($ln_fields as $ln_key => $ln_value) {
-                    echo '<tr><td>'.$ln_value.'</td><td>'. $this->buddypress_list_fields($args, $field_name, $ln_value, $stored_values) .'</td></tr>';
+                    $checked = !empty($stored_values_not_map[$ln_key]) ? 'checked' : '';
+                    echo '<tr><td>'.$ln_value.'</td><td>'. $this->buddypress_list_fields($args, $field_name, $ln_key, $stored_values) .'</td><td><input type="checkbox" name="pkli_buddypress_options['. $field_name .'_not_map]['. $ln_key .']" value="yes" '. $checked .'></td></tr>';
                 }
             ?>
         </table>
