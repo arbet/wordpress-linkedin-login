@@ -76,7 +76,7 @@ class PKLI_Settings {
     public function init_settings() {        
         register_setting( 'pkli_buddypress_options', 'pkli_buddypress_options' );
 
-        add_settings_section('pkli_buddypress_options_section', '', 'Choose which LinkedIn fields correspond to your BuddyPress custom fields', 'pkli_options_buddypress_page' );
+        add_settings_section('pkli_buddypress_options_section', '', '', 'pkli_options_buddypress_page' );
 
         global $wpdb;
 
@@ -297,8 +297,6 @@ class PKLI_Settings {
 
         $stored_values = isset($this->options_buddypress[$field_name]) ? $this->options_buddypress[$field_name] : '';
         $stored_values = is_array($stored_values) ? $stored_values : array();
-        $stored_values_not_map = isset($this->options_buddypress[$field_name.'_not_map']) ? $this->options_buddypress[$field_name.'_not_map'] : '';
-        $stored_values_not_map = is_array($stored_values_not_map) ? $stored_values_not_map : array();
 
         $ln_fields = array(
             'first-name'    =>'First Name',
@@ -308,16 +306,13 @@ class PKLI_Settings {
             'picture-url'   =>'Picture URL'
         );
         ?>
+        <h2><?php _e( 'Map LinkedIn to BuddyPress fields', 'linkedin-login' );?></h2>
+        <h3><?php _e( 'Choose which LinkedIn fields correspond to your BuddyPress custom fields', 'linkedin-login' );?></h3>
         <table class='buddypress_table'>
-            <caption>
-                <h2><?php _e( 'Map LinkedIn to BuddyPress fields', 'linkedin-login' );?></h2>
-                <h3><?php _e( 'Choose which LinkedIn fields correspond to your BuddyPress custom fields', 'linkedin-login' );?></h3>
-            </caption>
-            <tr><th><?php _e( 'LinkedIn', 'linkedin-login' );?></th><th><?php _e( 'Buddypress', 'linkedin-login' );?></th><th><?php _e( 'Do Not Map', 'linkedin-login' );?></th></tr>
+            <tr><th><?php _e( 'LinkedIn', 'linkedin-login' );?></th><th><?php _e( 'Buddypress', 'linkedin-login' );?></th></tr>
             <?php
                 foreach ($ln_fields as $ln_key => $ln_value) {
-                    $checked = !empty($stored_values_not_map[$ln_key]) ? 'checked' : '';
-                    echo '<tr><td>'.$ln_value.'</td><td>'. $this->buddypress_list_fields($args, $field_name, $ln_key, $stored_values) .'</td><td><input type="checkbox" name="pkli_buddypress_options['. $field_name .'_not_map]['. $ln_key .']" value="yes" '. $checked .'></td></tr>';
+                    echo '<tr><td>'.$ln_value.'</td><td>'. $this->buddypress_list_fields($args, $field_name, $ln_key, $stored_values) .'</td></tr>';
                 }
             ?>
         </table>
@@ -331,6 +326,8 @@ class PKLI_Settings {
         }
         $html = '<select name="pkli_buddypress_options['. $field_name .']['. $field_key .']">';
         if( !empty($args) ){
+            $selected = (isset($stored_values[$field_key]) && $stored_values[$field_key] == 'not_map') ? 'selected' : '';
+            $html .= '<option value="not_map" '. $selected .'>'. __( 'Do Not Map', 'linkedin-login' ) .'</option>';
             foreach ($args as $key => $value) {
                 $selected = (isset($stored_values[$field_key]) && $stored_values[$field_key] == $value->id) ? 'selected' : '';
                 $html .= '<option value="'. $value->id .'" '. $selected .'>'. $value->name .'</option>';

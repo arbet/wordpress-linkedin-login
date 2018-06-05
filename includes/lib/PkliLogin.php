@@ -443,8 +443,15 @@ Class PkliLogin {
             $buddypress_options = get_option('pkli_buddypress_options');
           
             $arr_bp_fields = isset($buddypress_options['li_buddypress_fields']) && is_array($buddypress_options['li_buddypress_fields']) ? $buddypress_options['li_buddypress_fields'] : array();
-            $arr_bp_fields_not_map = isset($buddypress_options['li_buddypress_fields_not_map']) && is_array($buddypress_options['li_buddypress_fields_not_map']) ? array_keys($buddypress_options['li_buddypress_fields_not_map']) : array();
-            $arr_fields = array();
+            $arr_bp_fields_not_map = $arr_fields = array();
+            
+            if( !empty($arr_bp_fields) ){
+                foreach ($arr_bp_fields as $bp_key => $bp_value) {
+                    if( $bp_value == 'not_map' ){
+                        $arr_bp_fields_not_map[] = $bp_key;
+                    }
+                }
+            }
              
             if( $first_name != false && isset($arr_bp_fields['first-name']) && !in_array('first-name', $arr_bp_fields_not_map) ){
                 $arr_fields[$arr_bp_fields['first-name']] = $first_name;
