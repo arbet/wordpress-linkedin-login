@@ -75,8 +75,10 @@ Class PkliLogin {
         if (get_current_user_id()) {
             $this->oauth->access_token = get_user_meta(get_current_user_id(), 'pkli_access_token', true);
         }
-        // Add shortcode for getting Ultimate LinkedIn Integration URL 
-        add_shortcode('wpli_locked_content', array($this, 'get_login_link'));
+//        // Add shortcode for getting Ultimate LinkedIn Integration URL 
+        add_shortcode('wpli_login_link', array($this, 'get_login_link'));
+        //Lock content
+        add_shortcode('wpli_locked_content', array($this, 'lock_content'));
 
         // Start session
         if (!session_id()) {
@@ -334,7 +336,7 @@ Class PkliLogin {
     }
 
     // Used by shortcode in order to get the login link
-    public function get_login_link($attributes = false, $content = '') {
+    public function get_login_link($attributes = false) {
         // extract data from array
         extract(shortcode_atts(array('text' => 'Login With LinkedIn', 'img' => PKLI_URL . 'includes/assets/img/linkedin-button.png', 'redirect' => false, 'autoredirect' => false, 'class' => ''), $attributes));
 
@@ -355,15 +357,8 @@ Class PkliLogin {
                 </script>
                 <?php                
             }
-            //Show content only if user is already logged in via LinkedIn 
-            if(get_user_meta(wp_get_current_user()->ID, 'pkli_linkedin_id') != false){
-                $html = $this->li_options['li_logged_in_message'].'<br/>';
-                $html .= $content != false ? $content : '';
-
-                return $html;    
-            }else{
-                return;
-            }
+            
+            return $this->li_options['li_logged_in_message'];
         }
 
         $auth_url = $this->get_auth_url($redirect);
@@ -379,8 +374,42 @@ Class PkliLogin {
         }
 
         // Default fields
-        return "<a href='" . $auth_url . "' class='$class'><img src='" . $img . "' /></a>";
+        return "<a href='" . $auth_url . "' class='$class'><img src='" . $img . "' /></a>";        
+    }
+    
+    public function lock_content($attributes = false, $content = '') {
+        // extract data from array
+        extract(shortcode_atts(array('text' => 'Login With LinkedIn', 'redirect' => false, 'autoredirect' => false, 'class' => ''), $attributes));
 
+        if( $redirect != false){
+            // Validate URL as absolute
+            if( ! filter_var($redirect, FILTER_VALIDATE_URL, FILTER_FLAG_HOST_REQUIRED) ){
+                $redirect = home_url($redirect);
+            }
+        }
+     
+        // Display the logged in message if user is already logged in
+        if (is_user_logged_in()) {
+            if( $autoredirect != false && $redirect != false ){
+                //Use js because 'wp_redirect' doesn't work
+                ?>
+                <script>
+                document.location.href = '<?php echo $redirect; ?>';
+                </script>
+                <?php                
+            }
+            //Show content only if user is already logged in via LinkedIn 
+            if(get_user_meta(wp_get_current_user()->ID, 'pkli_linkedin_id') != false){
+                return $content != false ? $content : '';
+            }else{
+                return;
+            }
+        }
+        
+        if (isset($attributes['text'])) {
+            return $text;
+        }
+        return $this->li_options['li_logged_in_message'] != false ? $this->li_options['li_logged_in_message'] : '';
     }
 
     // Updates the user's wordpress data based on his LinkedIn data
