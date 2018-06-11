@@ -19,6 +19,7 @@ class PKLI_Settings {
 
         $this->options = get_option('pkli_basic_options');
         $this->options_buddypress = get_option('pkli_buddypress_options');
+        $this->options_locked_content = get_option('pkli_locked_content_options');
     }
 
     /*
@@ -38,16 +39,20 @@ class PKLI_Settings {
         $this->pkli_basic_options_section_callback();
   
         $active_tab = "general-options";
-
-        if(isset($_GET["tab"]) && $_GET["tab"] == "buddypress-options" && class_exists('BuddyPress')){
-            $active_tab = "buddypress-options";
-        }            
+        if(isset($_GET["tab"])){
+            if($_GET["tab"] == "buddypress-options" && class_exists('BuddyPress')){
+                $active_tab = "buddypress-options";
+            }elseif($_GET["tab"] == "locked-content-options"){
+                $active_tab = "locked-content-options";
+            }
+        }
         ?>
         <h2 class="nav-tab-wrapper">
-                <a href="?page=linkedin_login_settings&tab=general-options" class="nav-tab <?php if($active_tab == 'general-options'){echo 'nav-tab-active';} ?> "><?php _e('General', 'linkedin-login'); ?></a>
+                <a href="?page=linkedin_login_settings&tab=general-options" class="nav-tab <?php if($active_tab == 'general-options'){echo 'nav-tab-active';} ?>"><?php _e('General', 'linkedin-login'); ?></a>
                 <?php if (class_exists('BuddyPress')) { ?>
                     <a href="?page=linkedin_login_settings&tab=buddypress-options" class="nav-tab <?php if($active_tab == 'buddypress-options'){echo 'nav-tab-active';} ?>"><?php _e('BuddyPress', 'linkedin-login'); ?></a>
                 <?php } ?>
+                <a href="?page=linkedin_login_settings&tab=locked-content-options" class="nav-tab <?php if($active_tab == 'locked-content-options'){echo 'nav-tab-active';} ?>"><?php _e('Locked Content', 'linkedin-login'); ?></a>                
         </h2>
         <form action='options.php' method='post'>
 
@@ -56,10 +61,18 @@ class PKLI_Settings {
                 settings_fields('pkli_options_page');
                 do_settings_sections('pkli_options_page');
                 
-            } elseif ($active_tab == 'buddypress-options') {
+            }elseif($active_tab == 'buddypress-options') {
+                
                 echo "<div class='tab-buddypress-options'>";
                 settings_fields('pkli_buddypress_options');
                 do_settings_sections('pkli_options_buddypress_page');
+                echo "</div>";
+                
+            }elseif($active_tab = "locked-content-options"){
+                
+                echo "<div class='tab-locked-content-options'>";
+                settings_fields('pkli_locked_content_options');
+                do_settings_sections('pkli_options_locked_content_page');
                 echo "</div>";
             }
             
@@ -73,9 +86,9 @@ class PKLI_Settings {
     /*
      * Initializes our settings
      */
-    public function init_settings() {        
+    public function init_settings() {
+        //For BuddyPress
         register_setting( 'pkli_buddypress_options', 'pkli_buddypress_options' );
-
         add_settings_section('pkli_buddypress_options_section', '', '', 'pkli_options_buddypress_page' );
 
         global $wpdb;
@@ -91,9 +104,9 @@ class PKLI_Settings {
                 'pkli_buddypress_options_section' ,
                 array('field_name' => 'li_buddypress_fields', 'args' => $arr_names)
         );
-
+        
+        //For General options
         register_setting( 'pkli_options_page', 'pkli_basic_options' );
-
         add_settings_section( 'pkli_general_options_section', '', '', 'pkli_options_page' );
 
         add_settings_field( 
@@ -197,7 +210,11 @@ class PKLI_Settings {
                 'pkli_options_page', 
                 'pkli_general_options_section',
                 array('field_name' => 'li_logged_in_message',
-                    'field_description' => 'Enter a message you would like to show for logged in users in place of the login button. If left blank, the button is hidden and no message is shown.')
+                    'field_description' => 'Enter a message you would like to show for logged in users in place of the login button. If left blank, the button is hidden and no message is shown.',
+                    'args' => array(
+                        'parent' => 'pkli_basic_options'
+                    )
+                )
         );
 
         add_settings_field( 
@@ -208,6 +225,23 @@ class PKLI_Settings {
                 'pkli_general_options_section' ,
                 array('field_name' => 'li_keep_user_logged_in',
                     'field_description' => 'Should the user login every time, or should we remember their details after they login via LinkedIn?')
+        );
+        //For Locked Content
+        register_setting( 'pkli_locked_content_options', 'pkli_locked_content_options' );
+        add_settings_section('pkli_locked_content_options_section', '', '', 'pkli_options_locked_content_page' );
+        
+        add_settings_field( 
+                'pkli_locked_content_options_section', 
+                __( 'Custom Message', 'linkedin-login' ), 
+                array($this, 'text_area_display'), 
+                'pkli_options_locked_content_page', 
+                'pkli_locked_content_options_section',
+                array('field_name' => 'li_locked_content_message',
+                    'field_description' => '',
+                    'args' => array(
+                        'parent' => 'pkli_locked_content_options'
+                    )
+                )
         );
     }
 
@@ -231,10 +265,11 @@ class PKLI_Settings {
      * @param   array   $field_options  Passed by the add_settings_field callback function
      */ 
     public function text_area_display($field_options) {
-
         $field_name = $field_options['field_name'];
+        $arg_parent = !empty($field_options['args']['parent']) ? $field_options['args']['parent'] : 'pkli_basic_options';
+        $stored_value = $arg_parent == 'pkli_basic_options' ? $this->get_field_value($field_name) : (isset($this->options_locked_content[$field_name]) ? $this->options_locked_content[$field_name] : '');
         ?>
-        <textarea cols='40' rows='5' name='pkli_basic_options[<?php echo $field_name; ?>]'><?php echo $this->get_field_value($field_name) ?></textarea>
+        <textarea cols='40' rows='5' name='<?php echo $arg_parent; ?>[<?php echo $field_name; ?>]'><?php echo $stored_value; ?></textarea>
         <p class="description"><?php echo isset($field_options['field_description'])?$field_options['field_description']:''; ?></p>
         <?php
 

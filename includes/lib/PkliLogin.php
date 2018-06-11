@@ -75,7 +75,7 @@ Class PkliLogin {
         if (get_current_user_id()) {
             $this->oauth->access_token = get_user_meta(get_current_user_id(), 'pkli_access_token', true);
         }
-//        // Add shortcode for getting Ultimate LinkedIn Integration URL 
+        // Add shortcode for getting Ultimate LinkedIn Integration URL 
         add_shortcode('wpli_login_link', array($this, 'get_login_link'));
         //Lock content
         add_shortcode('wpli_locked_content', array($this, 'lock_content'));
@@ -379,7 +379,7 @@ Class PkliLogin {
     
     public function lock_content($attributes = false, $content = '') {
         // extract data from array
-        extract(shortcode_atts(array('text' => 'Login With LinkedIn', 'redirect' => false, 'autoredirect' => false, 'class' => ''), $attributes));
+        extract(shortcode_atts(array('text' => 'Login With LinkedIn', 'redirect' => false, 'autoredirect' => false), $attributes));
 
         if( $redirect != false){
             // Validate URL as absolute
@@ -409,7 +409,10 @@ Class PkliLogin {
         if (isset($attributes['text'])) {
             return $text;
         }
-        return $this->li_options['li_logged_in_message'] != false ? $this->li_options['li_logged_in_message'] : '';
+  
+        $locked_content_options = get_option('pkli_locked_content_options');
+       
+        return isset($locked_content_options['li_locked_content_message']) ? $locked_content_options['li_locked_content_message'] : '';
     }
 
     // Updates the user's wordpress data based on his LinkedIn data

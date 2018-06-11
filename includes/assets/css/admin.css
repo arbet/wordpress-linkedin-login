@@ -1,7 +1,7 @@
 .form-table .buddypress_table td{
     padding: 0;
 }
-.form-table th[scope="row"]{
+.tab-buddypress-options .form-table th[scope="row"]{
     width: 0;
     padding: 0;
 }
