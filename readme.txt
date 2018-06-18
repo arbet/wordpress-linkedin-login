@@ -5,7 +5,7 @@ Donate link: https://paypal.me/SamerBechara
 Requires at least: 3.0.1
 Tested up to: 4.9.6
 Requires PHP: 5.x
-Stable tag: 1.0
+Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -36,15 +36,19 @@ List of major features:
 Install like any other plugin, and go to plugin settings page for configuration
 
 == Changelog ==
-= 1.0.1=
- * Minor fixes
 
-= 1.0=
+= 1.1=
+ * 
+
+= 1.0.1 =
+ * Removed old files and folders
+
+= 1.0 =
  * Added BuddyPress Integration
  * Added Custom Scopes
  * Added Content Locking Feature
 
-= 0.9.0= 
+= 0.9.0 = 
  * Removed Freemius Integration
  * Removed Piklist dependency to make install process easier
 

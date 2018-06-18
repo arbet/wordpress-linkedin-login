@@ -3,7 +3,7 @@
  * Plugin Name: Ultimate LinkedIn Integration
  * Plugin URI: http://thoughtengineer.com/wordpress-linkedin-login-plugin
  * Description: Enables login with LinkedIn functionality for your website
- * Version: 1.0
+ * Version: 1.1
  * Author: The Thought Engineer
  * Author URI: http://thoughtengineer.com/
  * Text Domain: linkedin-login
