@@ -15,21 +15,17 @@ One click Ultimate LinkedIn Integration/Registration, Buddy Press Integration, p
 Ultimate LinkedIn Integration (Previously Ultimate LinkedIn Integration) is the most advanced integration between LinkedIn and WordPress. This plugin gives your WordPress website the ability to integrate with LinkedIn\'s API in a way that isn\'t possible with other plugins. 
 
 List of major features:
-
-    - Map BuddyPress custom fields to LinkedIn profile fields
-    - Allow users to register/login with their LinkedIn account using one click
-    - Lock content and make it available to users who have logged in using LinkedIn only. Users who have logged in via other methods won\'t be able to see it. 
-    - Custom redirect URLs upon Sign-up, Login and Authorization Cancellation
-    - Ability to request custom scopes upon authentication (Basic profile and email address are asked for by default, Sharing and Company Admin scopes are optional)
-    - Ability to sync user data the first time user signs up, or everytime they login.
-    - Option to override the user\'s profile picture with LinkedIn\'s profile picture
-    - Ability to keep the user logged in, or require them to login every time.    
-
-    - Docmentation and ShortCodes: [WordPress LinkedIn Documentation](http://thoughtengineer.com/wordpress-linkedin-login-plugin/)
-
-    - Request features via our [Github Issue Tracker](https://github.com/arbet/wordpress-linkedin-login/issues)
-
-    - For Custom Development Services, get in touch through our [website](http://thoughtengineer.com/)
+- Map BuddyPress custom fields to LinkedIn profile fields
+- Allow users to register/login with their LinkedIn account using one click
+- Lock content and make it available to users who have logged in using LinkedIn only. Users who have logged in via other methods won\'t be able to see it. 
+- Custom redirect URLs upon Sign-up, Login and Authorization Cancellation
+- Ability to request custom scopes upon authentication (Basic profile and email address are asked for by default, Sharing and Company Admin scopes are optional)
+- Ability to sync user data the first time user signs up, or everytime they login.
+- Option to override the user\'s profile picture with LinkedIn\'s profile picture
+- Ability to keep the user logged in, or require them to login every time.
+- Docmentation and ShortCodes: [WordPress LinkedIn Documentation](http://thoughtengineer.com/docs/ultimate-linkedin-login/)
+- Request features via our [Github Issue Tracker](https://github.com/arbet/wordpress-linkedin-login/issues)
+- For Custom Development Services, get in touch through our [website](http://thoughtengineer.com/)
 
 
 == Installation ==
