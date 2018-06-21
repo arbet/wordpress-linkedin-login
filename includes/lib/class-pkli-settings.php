@@ -90,20 +90,22 @@ class PKLI_Settings {
         //For BuddyPress
         register_setting( 'pkli_buddypress_options', 'pkli_buddypress_options' );
         add_settings_section('pkli_buddypress_options_section', '', '', 'pkli_options_buddypress_page' );
+        
+        if (class_exists('BuddyPress')) {
+            global $wpdb;
 
-        global $wpdb;
-
-        $table_prof_fields = $wpdb->prefix.'bp_xprofile_fields';
-        $sql = "SELECT id, name FROM `{$table_prof_fields}` WHERE 1";
-        $arr_names = $wpdb->get_results( $sql );
-        add_settings_field(
-                'pkli_buddypress_options_section', 
-                __( '', 'linkedin-login' ), 
-                array($this, 'buddypress_fields_match'),  
-                'pkli_options_buddypress_page', 
-                'pkli_buddypress_options_section' ,
-                array('field_name' => 'li_buddypress_fields', 'args' => $arr_names)
-        );
+            $table_prof_fields = $wpdb->prefix.'bp_xprofile_fields';
+            $sql = "SELECT id, name FROM `{$table_prof_fields}` WHERE 1";
+            $arr_names = $wpdb->get_results( $sql );
+            add_settings_field(
+                    'pkli_buddypress_options_section', 
+                    __( '', 'linkedin-login' ), 
+                    array($this, 'buddypress_fields_match'),  
+                    'pkli_options_buddypress_page', 
+                    'pkli_buddypress_options_section' ,
+                    array('field_name' => 'li_buddypress_fields', 'args' => $arr_names)
+            );
+        }
         
         //For General options
         register_setting( 'pkli_options_page', 'pkli_basic_options' );
