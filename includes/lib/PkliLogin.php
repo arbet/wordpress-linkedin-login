@@ -435,11 +435,11 @@ Class PkliLogin {
         // Depending on the total number of positions, LinkedIn returns data in a different format
         switch ($total_positions) {
             case 1:
-                $user_positions[] = array('title' => (string) $xml->positions->position->{'title'}, 'summary' => (string) $xml->positions->position->{'summary'});
+                $user_positions[] = array('title' => (string) $xml->positions->position->{'title'}, 'summary' => (string) $xml->positions->position->{'summary'}, 'company_name' => (string) $xml->positions->position->company->{'name'});
                 break;
             case $total_positions > 1:
                 foreach ($xml->positions->position as $position) {
-                    $user_positions[] = array('title' => (string) $position->{'title'}, 'summary' => (string) $position->{'summary'});
+                    $user_positions[] = array('title' => (string) $position->{'title'}, 'summary' => (string) $position->{'summary'}, 'company_name' => (string) $position->company->{'name'});
                 }
                 break;
             default:
