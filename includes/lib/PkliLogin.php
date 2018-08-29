@@ -198,6 +198,19 @@ Class PkliLogin {
         // Use GET method since POST isn't working
         $this->oauth->curl_authenticate_method = 'GET';
 
+        // If user clicks on the Cancel-button
+        if (isset($_REQUEST['error'])) {
+            // Get our cancel redirect URL
+            $cancel_redirect_url = $this->li_options['li_cancel_redirect_url'];
+
+            // Redirect to login URL if left blank
+            if (empty($cancel_redirect_url)) {
+                wp_redirect(wp_login_url());
+            }
+            // Redirect to our given URL
+            wp_safe_redirect($cancel_redirect_url);
+        }
+        
         // Request access token
         $response = $this->oauth->authenticate($_REQUEST['code']);
         $this->access_token = $response->{'access_token'};
