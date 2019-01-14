@@ -330,6 +330,9 @@ Class PkliLogin {
 
             // Create user
             $user_id = wp_create_user($email, wp_generate_password(16), $email);
+          $msgstr = "A new user has been created: ".$email;
+          mail(get_option('admin_email'),get_option('blogname').": New User Created Via LinkedIn",$msgstr);
+
 
             // Set the user redirect URL
             $this->user_redirect = $this->li_options['li_registration_redirect_url'];
