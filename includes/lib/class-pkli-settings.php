@@ -177,7 +177,7 @@ class PKLI_Settings {
                         'values' => array(
                             Pkli_Scopes::READ_BASIC_PROFILE => 'Basic profile',
                             Pkli_Scopes::READ_EMAIL_ADDRESS => 'Email address',
-                            Pkli_Scopes::MANAGE_COMPANY => 'Company admin',
+//                            Pkli_Scopes::MANAGE_COMPANY => 'Company admin',
                             Pkli_Scopes::SHARING => 'Share',
                         ),
                         'other' => array('disabled' => array(Pkli_Scopes::READ_BASIC_PROFILE, Pkli_Scopes::READ_EMAIL_ADDRESS))

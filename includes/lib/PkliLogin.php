@@ -22,7 +22,7 @@ Class PkliLogin {
 
     const _TOKEN_URL = 'https://www.linkedin.com/uas/oauth2/accessToken';
 
-    const _BASE_URL = 'https://api.linkedin.com/v1';
+    const _BASE_URL = 'https://api.linkedin.com/v2';
 
     // LinkedIn Application Key
     public $li_api_key;
@@ -92,7 +92,7 @@ Class PkliLogin {
         
         $state = wp_generate_password(12, false);
         
-        //'r_basicprofile' and 'r_emailaddress' are default values
+        //'r_liteprofile' and 'r_emailaddress' are default values
         require_once (PKLI_PATH.'/includes/lib/class-pkli-scopes.php');
         $def_scopes = array(Pkli_Scopes::READ_BASIC_PROFILE, Pkli_Scopes::READ_EMAIL_ADDRESS);
         $this->li_options['li_list_scopes'] = (isset($this->li_options['li_list_scopes']) && is_array($this->li_options['li_list_scopes'])) ? implode(' ', array_unique(array_merge($this->li_options['li_list_scopes'], $def_scopes))) : implode(' ', $def_scopes);
@@ -215,11 +215,25 @@ Class PkliLogin {
         $response = $this->oauth->authenticate($_REQUEST['code']);
         $this->access_token = $response->{'access_token'};
 
-        // Get first name, last name and email address, and load 
-        // response into XML object
-        $xml = simplexml_load_string($this->oauth->get('https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address,headline,specialties,positions:(id,title,summary,start-date,end-date,is-current,company),summary,site-standard-profile-request,picture-url,location:(name,country:(code)),industry,public-profile-url)'));
+        // Get first name, last name and email address, and user picture
+        $xml = $this->oauth->get('https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,positions,profilePicture(displayImage~:playableStreams))');
+        $email_data = $this->oauth->get('https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))');
+		$email_data = json_decode($email_data);
+		$xml = json_decode($xml);
+		$locale_lastName = $xml->lastName->preferredLocale->language.'_'.$xml->lastName->preferredLocale->country;
+		$lastName = $xml->lastName->localized->$locale_lastName;
 
-        return $xml;
+		$locale_firstName = $xml->firstName->preferredLocale->language.'_'.$xml->firstName->preferredLocale->country;
+		$firstName = $xml->firstName->localized->$locale_firstName;
+
+		$data = [
+			'id'=>$xml->id,
+			'first-name'=>$firstName,
+			'last-name'=>$lastName,
+			'email-address'=>$email_data->elements[0]->{'handle~'}->{'emailAddress'},
+			'picture-url'=>$xml->profilePicture->{'displayImage~'}->elements[0]->identifiers[0]->identifier,
+		];
+        return (object)$data;
 
     }
 
@@ -442,23 +456,23 @@ Class PkliLogin {
         $specialties = (string) $xml->{'specialties'};
         $public_profile_url = (string) $xml->{'public-profile-url'};
 
-        // Get total positions
-        $total_positions = (int) $xml->positions->attributes()->total;
-
-        // Depending on the total number of positions, LinkedIn returns data in a different format
-        switch ($total_positions) {
-            case 1:
-                $user_positions[] = array('title' => (string) $xml->positions->position->{'title'}, 'summary' => (string) $xml->positions->position->{'summary'}, 'company_name' => (string) $xml->positions->position->company->{'name'});
-                break;
-            case $total_positions > 1:
-                foreach ($xml->positions->position as $position) {
-                    $user_positions[] = array('title' => (string) $position->{'title'}, 'summary' => (string) $position->{'summary'}, 'company_name' => (string) $position->company->{'name'});
-                }
-                break;
-            default:
-                $user_positions = array();
-                break;
-        }
+//         Get total positions
+//        $total_positions = (int) $xml->positions->attributes()->total;
+//
+//        // Depending on the total number of positions, LinkedIn returns data in a different format
+//        switch ($total_positions) {
+//            case 1:
+//                $user_positions[] = array('title' => (string) $xml->positions->position->{'title'}, 'summary' => (string) $xml->positions->position->{'summary'}, 'company_name' => (string) $xml->positions->position->company->{'name'});
+//                break;
+//            case $total_positions > 1:
+//                foreach ($xml->positions->position as $position) {
+//                    $user_positions[] = array('title' => (string) $position->{'title'}, 'summary' => (string) $position->{'summary'}, 'company_name' => (string) $position->company->{'name'});
+//                }
+//                break;
+//            default:
+//                $user_positions = array();
+//                break;
+//        }
 
         if (!$user_id) {
             $user_id = get_current_user_id();
@@ -473,7 +487,8 @@ Class PkliLogin {
         update_user_meta($user_id, 'pkli_linkedin_profile', array('first' => $first_name, 'last' => $last_name, 'description' => $description,
             'linkedin_url' => $linkedin_url, 'linkedin_id' => $linkedin_id, 'profile_picture' => $picture_url,
             'location' => $location, 'industry' => $industry, 'headline' => $headline, 
-            'specialties' => $specialties, 'positions' => $user_positions, 'public_profile_url' => $public_profile_url));
+//            'specialties' => $specialties, 'positions' => $user_positions, 'public_profile_url' => $public_profile_url)
+		));
                
         //Is BuddyPress active?
         if (class_exists('BuddyPress')) {
