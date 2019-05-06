@@ -16,6 +16,9 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+
+require_once (PKLI_PATH.'/includes/lib/class-pkli-scopes.php');
+
 Class PkliLogin {
 
     const _AUTHORIZE_URL = 'https://www.linkedin.com/uas/oauth2/authorization';
@@ -93,7 +96,6 @@ Class PkliLogin {
         $state = wp_generate_password(12, false);
         
         //'r_liteprofile' and 'r_emailaddress' are default values
-        require_once (PKLI_PATH.'/includes/lib/class-pkli-scopes.php');
         $def_scopes = array(Pkli_Scopes::READ_BASIC_PROFILE, Pkli_Scopes::READ_EMAIL_ADDRESS);
         $this->li_options['li_list_scopes'] = (isset($this->li_options['li_list_scopes']) && is_array($this->li_options['li_list_scopes'])) ? implode(' ', array_unique(array_merge($this->li_options['li_list_scopes'], $def_scopes))) : implode(' ', $def_scopes);
 
@@ -446,15 +448,12 @@ Class PkliLogin {
     private function update_user_data($xml, $user_id = false) {
         $first_name = (string) $xml->{'first-name'};
         $last_name = (string) $xml->{'last-name'};
-        $description = (string) $xml->{'summary'};
-        $linkedin_url = (string) $xml->{'site-standard-profile-request'}->url;
-        $linkedin_id = (string) $xml->{'id'};
         $picture_url = (string) $xml->{'picture-url'};
-        $location = array('name' => (string) $xml->{'location'}->{'name'}, 'country_code' => (string) $xml->{'location'}->{'country'}->{'code'});
-        $industry = (string) $xml->{'industry'};
-        $headline = (string) $xml->{'headline'};
-        $specialties = (string) $xml->{'specialties'};
-        $public_profile_url = (string) $xml->{'public-profile-url'};
+        $linkedin_id = (string) $xml->{'id'};
+
+        if (Pkli_Scopes::READ_BASIC_PROFILE == 'r_basicprofile' || Pkli_Scopes::READ_BASIC_PROFILE == 'r_fullprofile') {
+            // TODO: catch info sent by r_basicprofile and/or r_fullprofile scopes
+        }
 
 //         Get total positions
 //        $total_positions = (int) $xml->positions->attributes()->total;
@@ -478,15 +477,13 @@ Class PkliLogin {
             $user_id = get_current_user_id();
         }
         // Update user data in database
-        $result = wp_update_user(array('ID' => $user_id, 'first_name' => $first_name, 'last_name' => $last_name, 'description' => $description, 'user_url' => $linkedin_url));
+        $result = wp_update_user(array('ID' => $user_id, 'first_name' => $first_name, 'last_name' => $last_name));
 
         // Store LinkedIn ID in database
         update_user_meta($user_id, 'pkli_linkedin_id', $linkedin_id);
 
         // Store all profile fields as metadata values
-        update_user_meta($user_id, 'pkli_linkedin_profile', array('first' => $first_name, 'last' => $last_name, 'description' => $description,
-            'linkedin_url' => $linkedin_url, 'linkedin_id' => $linkedin_id, 'profile_picture' => $picture_url,
-            'location' => $location, 'industry' => $industry, 'headline' => $headline, 
+        update_user_meta($user_id, 'pkli_linkedin_profile', array('first' => $first_name, 'last' => $last_name, 'linkedin_id' => $linkedin_id, 'profile_picture' => $picture_url 
 //            'specialties' => $specialties, 'positions' => $user_positions, 'public_profile_url' => $public_profile_url)
 		));
                
